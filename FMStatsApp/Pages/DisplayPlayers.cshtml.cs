@@ -1,3 +1,4 @@
+using FMStatsApp.Extensions;
 using FMStatsApp.Models;
 using FMStatsApp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +8,20 @@ namespace FMStatsApp.Pages
 {
 	public class DisplayPlayersModel : PageModel
 	{
-		private readonly PlayerStorageService _service;
+		//private readonly PlayerStorageService _service;
 
 		public List<Player> Players { get; set; }
-		public IActionResult OnGet()
+		private readonly IHttpContextAccessor _httpContextAccessor;
+		
+		public DisplayPlayersModel(IHttpContextAccessor httpContextAccessor)
 		{
-			Players = _service.GetAllPlayers();
-			return Page();
+			_httpContextAccessor = httpContextAccessor;
 		}
 
-		public DisplayPlayersModel(PlayerStorageService service)
+		public IActionResult OnGet()
 		{
-			_service = service;
+			Players = _httpContextAccessor.HttpContext.Session.GetObjectFromJson<List<Player>>("Players");
+			return Page();
 		}
 	}
 }
