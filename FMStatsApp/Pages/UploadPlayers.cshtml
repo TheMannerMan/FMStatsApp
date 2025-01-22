@@ -1,0 +1,10 @@
+﻿@page
+@model UploadPlayersModel
+@{
+}
+<form method="post" enctype="multipart/form-data">
+<div class="input-group">
+        <input type="file" class="form-control" id="inputGroupFile04" name="UploadedFile"  aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+        <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04" asp-page-handler="Upload">Button</button>
+</div>
+</form>

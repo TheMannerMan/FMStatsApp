@@ -1,0 +1,29 @@
+﻿@page
+@model DisplayPlayersModel
+@{
+}
+@if (Model.Players.Any())
+{
+    <h3>Uploaded Players</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Position</th>
+                <th>Nationality</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Model.Players)
+            {
+                <tr>
+                    <td>@player.Name</td>
+                    <td>@player.Age</td>
+                    <td>@player.Position</td>
+                    <td>@player.Nationality</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
