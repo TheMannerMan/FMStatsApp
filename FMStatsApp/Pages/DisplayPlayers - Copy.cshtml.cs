@@ -6,10 +6,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace FMStatsApp.Pages
 {
-	public class DisplayPlayersModel : PageModel
+	public class DisplayPlayersModelCOPY : PageModel
 	{
 		//private readonly PlayerStorageService _service;
-		
 
 		public List<string> ForwardRoles { get; set; } = new List<string>() {
 			"Advande forward attack",
@@ -23,10 +22,9 @@ namespace FMStatsApp.Pages
 
 		[BindProperty]
 		public List<Player> Players { get; set; }
-
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public DisplayPlayersModel(IHttpContextAccessor httpContextAccessor)
+		public DisplayPlayersModelCOPY(IHttpContextAccessor httpContextAccessor)
 		{
 			_httpContextAccessor = httpContextAccessor;
 		}
@@ -39,7 +37,6 @@ namespace FMStatsApp.Pages
 
 		public IActionResult OnPost()
 		{
-			Players = _httpContextAccessor.HttpContext.Session.GetObjectFromJson<List<Player>>("Players");
 			return Page();
 		}
 	}

@@ -20,7 +20,7 @@ namespace FMStatsApp.Services
 				var columns = row.SelectNodes("td");
 				if (columns == null || columns.Count < 54) continue;
 
-				players.Add(new Player
+				var player = new Player(new Player
 				{
 					Reg = columns[0].InnerText.Trim(),
 					Inf = columns[1].InnerText.Trim(),
@@ -78,8 +78,10 @@ namespace FMStatsApp.Services
 					WorkRate = int.TryParse(columns[53].InnerText.Trim(), out var wor) ? wor : 0,
 					UID = long.TryParse(columns[54].InnerText.Trim(), out var uid) ? uid : 0,
 					Corners = int.TryParse(columns[55].InnerText.Trim(), out var cor) ? cor : 0,
-					Club = columns[56].InnerText.Trim()
+					Club = columns[56].InnerText.Trim(),
 				});
+				player.FalseNine = ScoringCalculator.FalseNine(player);
+				players.Add(player);
 
 			}
 			return players;

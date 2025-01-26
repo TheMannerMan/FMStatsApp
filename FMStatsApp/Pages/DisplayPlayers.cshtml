@@ -4,26 +4,66 @@
 }
 @if (Model.Players.Any())
 {
-    <h3>Uploaded Players</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Position</th>
-                <th>Nationality</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var player in Model.Players)
-            {
-                <tr>
-                    <td>@player.Name</td>
-                    <td>@player.Age</td>
-                    <td>@player.Position</td>
-                    <td>@player.Nationality</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+	<h3>Uploaded Players</h3>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Age</th>
+				<th>Position</th>
+				<th>Nationality</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var player in Model.Players)
+			{
+				<tr>
+					<td>@player.Name</td>
+					<td>@player.Age</td>
+					<td>@player.Position</td>
+					<td>@player.Nationality</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+<p>
+	<a class="btn btn-primary" data-bs-toggle="collapse" href="#forwardRolesCollapse" role="button" aria-expanded="false" aria-controls="forwardRolesCollapse">
+		Add Forward Roles
+	</a>
+</p>
+
+<div class="collapse" id="forwardRolesCollapse">
+	<div class="card card-body">
+		<form method="post">
+			<input asp-for="Players" value="@Model.Players" type="hidden">
+			<div class="row mb-2 text-center bg-white p-2">
+				<div class="col-md-10 themed-grid-col d-flex flex-wrap justify-content-center">
+					@foreach (var role in Model.ForwardRoles)
+					{
+						<input type="checkbox" class="btn-check" id="@role" name="SelectedForwardRoles" value="@role" autocomplete="off" checked="@(Model.SelectedForwardRoles.Contains(role) ? "checked" : null)">
+						<label class="btn btn-light m-1" for="@role">@role</label>
+					}
+				</div>
+				<div class="col-md-2 themed-grid-col">
+					<button class="btn btn-success btn-sm" type="submit">Save</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="row mb-2 text-center">
+	<div class="col-md-10 themed-grid-head-col">
+		Selected roles
+	</div>
+</div>
+@foreach (var role in Model.SelectedForwardRoles)
+{
+	<div class="row mb-2 text-center">
+		<div class="col-md-10 themed-grid-col">
+			@role
+		</div>
+	</div>
 }

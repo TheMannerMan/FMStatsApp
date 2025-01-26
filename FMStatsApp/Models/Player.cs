@@ -68,6 +68,12 @@ namespace FMStatsApp.Models
 		public int Corners { get; set; }
 		public string Club { get; set; }
 		#endregion
+
+		// Role scoring
+		#region
+		public int FalseNine { get; set; }
+		#endregion
+
 		public static class PlayerParser
 		{
 			public static int ParseWage(string wageString)
