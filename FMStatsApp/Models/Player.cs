@@ -5,6 +5,8 @@ namespace FMStatsApp.Models
 {
 	public class Player
 	{
+
+		public List<Role> Roles { get; set; }
 		public string Reg { get; set; }
 		public string Inf { get; set; }
 		public string Name { get; set; }
@@ -20,6 +22,8 @@ namespace FMStatsApp.Models
 		public string LeftFoot { get; set; }
 		public string RightFoot { get; set; }
 		public int Height { get; set; }
+
+
 
 
 		// Attributes
@@ -68,6 +72,12 @@ namespace FMStatsApp.Models
 		public int Corners { get; set; }
 		public string Club { get; set; }
 		#endregion
+
+		// Role scoring
+		#region
+		
+		#endregion
+
 		public static class PlayerParser
 		{
 			public static int ParseWage(string wageString)

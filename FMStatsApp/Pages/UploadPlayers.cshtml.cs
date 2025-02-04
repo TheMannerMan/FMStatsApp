@@ -1,15 +1,19 @@
+using FMStatsApp.Extensions;
+using FMStatsApp.Models;
 using FMStatsApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 
 namespace FMStatsApp.Pages
 {
 	public class UploadPlayersModel : PageModel
 	{
-		private readonly PlayerStorageService _service;
+		//private readonly PlayerStorageService _service;
 		private readonly HtmlParser _htmlParser;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 
 		[BindProperty]
 		public IFormFile UploadedFile { get; set; }
@@ -24,15 +28,25 @@ namespace FMStatsApp.Pages
 			{
 				using var stream = UploadedFile.OpenReadStream();
 				var parsedPlayers = _htmlParser.ParsedPlayers(stream);
-				_service.AddPlayers(parsedPlayers);
+
+				/*var json = JsonSerializer.Serialize(parsedPlayers);
+				Console.WriteLine(json);
+				var options = new JsonSerializerOptions
+				{
+					IncludeFields = true
+				};
+				var deserialized = JsonSerializer.Deserialize<List<Player>>(json, options); */
+
+				_httpContextAccessor.HttpContext.Session.SetObjectAsJson("Players", parsedPlayers);
+
 			}
 
 			return RedirectToPage("/DisplayPlayers");
 		}
-		public UploadPlayersModel(HtmlParser htmlParser, PlayerStorageService service)
+		public UploadPlayersModel(HtmlParser htmlParser, IHttpContextAccessor httpContextAccessor)
 		{
 			_htmlParser = htmlParser;
-			_service = service;
+			_httpContextAccessor = httpContextAccessor;
 		}
 	}
 }
