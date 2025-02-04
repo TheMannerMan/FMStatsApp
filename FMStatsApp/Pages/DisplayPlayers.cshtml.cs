@@ -21,7 +21,7 @@ namespace FMStatsApp.Pages
 			.ToList();
 
 		[BindProperty]
-		public List<string> SelectedForwardRoles { get; set; } = new List<string>();
+		public List<string> SelectedRoles { get; set; } = new List<string>();
 
 		[BindProperty]
 		public List<string> SelectedMidfielderRoles { get; set; } = new List<string>();

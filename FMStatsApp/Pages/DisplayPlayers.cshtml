@@ -5,14 +5,14 @@
 @if (Model.Players.Any())
 {
 	<h3>Uploaded Players</h3>
-	<table class="table">
+	<table id="playerInfoTable" class="table table-striped">
 		<thead>
 			<tr>
 				<th>Name</th>
 				<th>Age</th>
 				<th>Position</th>
 				<th>Nationality</th>
-				@foreach (var role in Model.SelectedForwardRoles)
+				@foreach (var role in Model.SelectedRoles)
 				{
 					<th>@role</th>
 				}
@@ -26,7 +26,7 @@
 					<td>@player.Age</td>
 					<td>@player.Position</td>
 					<td>@player.Nationality</td>
-					@foreach (var role in Model.SelectedForwardRoles)
+					@foreach (var role in Model.SelectedRoles)
 					{
 						var roleData = player.Roles.FirstOrDefault(r => r.RoleName == role);
 						<td>
@@ -51,36 +51,19 @@
 		<form method="post">
 			<input asp-for="Players" value="@Model.Players" type="hidden">
 			<div class="row mb-2 text-center bg-white p-2">
+				<p>Forward roles</p>
 				<div class="col-md-10 themed-grid-col d-flex flex-wrap justify-content-center">
 					@foreach (var role in Model.ForwardRoles)
 					{
-						<input type="checkbox" class="btn-check" id="@role" name="SelectedForwardRoles" value="@role" autocomplete="off" checked="@(Model.SelectedForwardRoles.Contains(role) ? "checked" : null)">
+						<input type="checkbox" class="btn-check" id="@role" name="SelectedRoles" value="@role" autocomplete="off" checked="@(Model.SelectedRoles.Contains(role) ? "checked" : null)">
 						<label class="btn btn-light m-1" for="@role">@role</label>
 					}
 				</div>
-				<div class="col-md-2 themed-grid-col">
-					<button class="btn btn-success btn-sm" type="submit">Save</button>
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
-
-<p>
-	<a class="btn btn-primary" data-bs-toggle="collapse" href="#midfielderRolesCollapse" role="button" aria-expanded="false" aria-controls="midfielderRolesCollapse">
-		Add Midfielder Roles
-	</a>
-</p>
-
-<div class="collapse" id="midfielderRolesCollapse">
-	<div class="card card-body">
-		<form method="post">
-			<input asp-for="Players" value="@Model.Players" type="hidden">
-			<div class="row mb-2 text-center bg-white p-2">
+				<p>Midfield roles</p>
 				<div class="col-md-10 themed-grid-col d-flex flex-wrap justify-content-center">
 					@foreach (var role in Model.MidfielderRoles)
 					{
-						<input type="checkbox" class="btn-check" id="@role" name="SelectedMidfielderRoles" value="@role" autocomplete="off" checked="@(Model.SelectedMidfielderRoles.Contains(role) ? "checked" : null)">
+						<input type="checkbox" class="btn-check" id="@role" name="SelectedRoles" value="@role" autocomplete="off" checked="@(Model.SelectedRoles.Contains(role) ? "checked" : null)">
 						<label class="btn btn-light m-1" for="@role">@role</label>
 					}
 				</div>
@@ -97,11 +80,3 @@
 		Selected roles
 	</div>
 </div>
-@foreach (var role in Model.SelectedForwardRoles)
-{
-	<div class="row mb-2 text-center">
-		<div class="col-md-10 themed-grid-col">
-			@role
-		</div>
-	</div>
-}
