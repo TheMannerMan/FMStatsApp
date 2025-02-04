@@ -9,17 +9,22 @@ namespace FMStatsApp.Pages
 	public class DisplayPlayersModel : PageModel
 	{
 		//private readonly PlayerStorageService _service;
-		
 
-		public List<string> ForwardRoles { get; set; } = new List<string>() {
-			"Advande forward attack",
-			"Advanced Forward support",
-			"Deep Lying Forward attack",
-			"Deep Lying Forward support",
-			"Deep Lying Forward defend"};
+		public List<string> ForwardRoles { get; set; } = RoleCatalog.AllRoles
+			.Where(r => r.Position == Position.Forward)
+			.Select(r => r.Name)
+			.ToList();
+
+		public List<string> MidfielderRoles { get; set; } = RoleCatalog.AllRoles
+			.Where(r => r.Position == Position.Midfielder)
+			.Select(r => r.Name)
+			.ToList();
 
 		[BindProperty]
 		public List<string> SelectedForwardRoles { get; set; } = new List<string>();
+
+		[BindProperty]
+		public List<string> SelectedMidfielderRoles { get; set; } = new List<string>();
 
 		[BindProperty]
 		public List<Player> Players { get; set; }

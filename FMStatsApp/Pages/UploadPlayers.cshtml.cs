@@ -1,8 +1,10 @@
 using FMStatsApp.Extensions;
+using FMStatsApp.Models;
 using FMStatsApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 
 namespace FMStatsApp.Pages
@@ -26,6 +28,15 @@ namespace FMStatsApp.Pages
 			{
 				using var stream = UploadedFile.OpenReadStream();
 				var parsedPlayers = _htmlParser.ParsedPlayers(stream);
+
+				/*var json = JsonSerializer.Serialize(parsedPlayers);
+				Console.WriteLine(json);
+				var options = new JsonSerializerOptions
+				{
+					IncludeFields = true
+				};
+				var deserialized = JsonSerializer.Deserialize<List<Player>>(json, options); */
+
 				_httpContextAccessor.HttpContext.Session.SetObjectAsJson("Players", parsedPlayers);
 
 			}

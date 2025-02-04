@@ -6,13 +6,18 @@ namespace FMStatsApp.Extensions
 	{
 		public static void SetObjectAsJson(this ISession session, string key, object value)
 		{
-			session.SetString(key, JsonSerializer.Serialize(value));
+			var serialiasedObject = JsonSerializer.Serialize(value);
+			session.SetString(key, serialiasedObject);
 		}
 
 		public static T GetObjectFromJson<T>(this ISession session, string key)
 		{
 			var value = session.GetString(key);
-			return value == null ? default(T) : JsonSerializer.Deserialize<T>(value);
+			var options = new JsonSerializerOptions
+			{
+				IncludeFields = true
+			};
+			return value == null ? default(T) : JsonSerializer.Deserialize<T>(value, options);
 		}
 	}
 }
