@@ -7,6 +7,7 @@ namespace FMStatsApp.Models
 	{
 		public string RoleName { get; init; }
 		public string ShortRoleName { get; init; }
+		public Position Position { get; init; }
 		public float RoleScore { get; init; }
 
 		[JsonConstructor]

@@ -3,7 +3,7 @@
 namespace FMStatsApp.Models
 {
 
-	public enum Position
+	public enum GeneralPosition
 	{
 		Goalkeeper,
 		Defender,
@@ -11,7 +11,7 @@ namespace FMStatsApp.Models
 		Forward
 	}
 
-	public record RoleDefinition(string Name, string ShortName, Position Position, Dictionary<string, int> AttributeWeights);
+	public record RoleDefinition(string Name, string ShortName, GeneralPosition GeneralPosition, List<Position> Positions, Dictionary<string, int> AttributeWeights);
 
 	public static class RoleCatalog
 	{
@@ -21,7 +21,8 @@ namespace FMStatsApp.Models
 			new RoleDefinition(
 				Name: "Advance Forward Attack",
 				ShortName: "afa",
-				Position: Position.Forward,
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -44,7 +45,8 @@ namespace FMStatsApp.Models
 			new RoleDefinition(
 				Name: "Advance Playmaker Attack",
 				ShortName: "apa",
-				Position: Position.Midfielder,
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.AMC, Position.AMR, Position.AML, Position.MC },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -68,7 +70,8 @@ namespace FMStatsApp.Models
 			new RoleDefinition(
 				Name: "Advance Playmaker Support",
 				ShortName: "aps",
-				Position: Position.Midfielder,
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.AMC, Position.AMR, Position.AML, Position.MC },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -92,7 +95,8 @@ namespace FMStatsApp.Models
 			new RoleDefinition(
 				Name: "Anchor Defend",
 				ShortName: "ad",
-				Position: Position.Midfielder,
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM},
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -113,7 +117,8 @@ namespace FMStatsApp.Models
 			new RoleDefinition(
 				Name: "Attacking Midfielder Attack",
 				ShortName: "ama",
-				Position: Position.Midfielder,
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.AMC },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -132,13 +137,40 @@ namespace FMStatsApp.Models
 					{ "Stamina", 5 },
 					{ "Technique", 3 },
 					{ "Vision", 1 },
-					{ "WorkRate", 5 },
+					{ "WorkRate", 5 }
+				}
+				),
+			new RoleDefinition(
+				Name: "Ball Playing Defender Cover",
+				ShortName: "bpdc",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 3 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 1 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 }
 				}
 				),
 			new RoleDefinition(
 				Name: "Complete Forward Attack",
 				ShortName: "cfa",
-				Position: Position.Forward,
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST},
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -167,7 +199,8 @@ namespace FMStatsApp.Models
 			new RoleDefinition(
 				Name:"Complete Forward Support",
 				ShortName: "cfs",
-				Position: Position.Forward,
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST},
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -198,7 +231,8 @@ namespace FMStatsApp.Models
 
 				Name: "False Nine Support",
 				ShortName: "f9s",
-				Position: Position.Forward,
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST},
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -217,8 +251,56 @@ namespace FMStatsApp.Models
 					{ "Flair", 1 },
 					{ "Teamwork", 1 },
 					{ "Balance", 1 },
+				}),
+			new RoleDefinition(
+				Name: "Full Back Attack",
+				ShortName: "fba",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Concentration", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
 				}
-			),
+				),
+			new RoleDefinition(
+
+				Name: "Goalkeeper Defend",
+				ShortName: "gkd",
+				GeneralPosition: GeneralPosition.Goalkeeper,
+				Positions: new List<Position> { Position.GK},
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "OneVsOne", 1 },
+					{ "AerialAbility", 3 },
+					{ "Agility", 5 },
+					{ "Anticipation", 1 },
+					{ "CommandOfArea", 3 },
+					{ "Concentration", 3 },
+					{ "Decisions", 1 },
+					{ "Handling", 3 },
+					{ "Kicking", 3 },
+					{ "Positioning", 3 },
+					{ "Reflexes", 5 },
+					{ "Throwing", 1 }
+				})
 		};
 	}
 }

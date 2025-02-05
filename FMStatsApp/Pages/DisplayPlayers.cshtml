@@ -1,4 +1,5 @@
 ﻿@page
+@using FMStatsApp.Models
 @model DisplayPlayersModel
 @{
 }
@@ -12,7 +13,7 @@
 				<th>Age</th>
 				<th>Position</th>
 				<th>Nationality</th>
-				@foreach (var role in Model.SelectedRoles)
+				@foreach (var role in Model.SelectedRolesToList)
 				{
 					<th>@role</th>
 				}
@@ -26,7 +27,7 @@
 					<td>@player.Age</td>
 					<td>@player.Position</td>
 					<td>@player.Nationality</td>
-					@foreach (var role in Model.SelectedRoles)
+					@foreach (var role in Model.SelectedRolesToList)
 					{
 						var roleData = player.Roles.FirstOrDefault(r => r.RoleName == role);
 						<td>
@@ -55,7 +56,7 @@
 				<div class="col-md-10 themed-grid-col d-flex flex-wrap justify-content-center">
 					@foreach (var role in Model.ForwardRoles)
 					{
-						<input type="checkbox" class="btn-check" id="@role" name="SelectedRoles" value="@role" autocomplete="off" checked="@(Model.SelectedRoles.Contains(role) ? "checked" : null)">
+						<input type="checkbox" class="btn-check" id="@role" name="SelectedRoles" value="@role" autocomplete="off" checked="@(Model.SelectedRolesToList.Contains(role) ? "checked" : null)">
 						<label class="btn btn-light m-1" for="@role">@role</label>
 					}
 				</div>
@@ -63,7 +64,7 @@
 				<div class="col-md-10 themed-grid-col d-flex flex-wrap justify-content-center">
 					@foreach (var role in Model.MidfielderRoles)
 					{
-						<input type="checkbox" class="btn-check" id="@role" name="SelectedRoles" value="@role" autocomplete="off" checked="@(Model.SelectedRoles.Contains(role) ? "checked" : null)">
+						<input type="checkbox" class="btn-check" id="@role" name="SelectedRoles" value="@role" autocomplete="off" checked="@(Model.SelectedRolesToList.Contains(role) ? "checked" : null)">
 						<label class="btn btn-light m-1" for="@role">@role</label>
 					}
 				</div>
