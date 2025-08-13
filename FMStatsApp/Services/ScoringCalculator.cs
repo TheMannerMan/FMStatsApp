@@ -35,67 +35,6 @@ namespace FMStatsApp.Services
 				roles.Add(role);
 			}
 			return roles;
-
-			/*roles.Add(AdvanceForwardAttack(_player));
-			roles.Add(CompleteForwardAttack(_player));
-			roles.Add(CompleteForwardSupport(_player));
-			roles.Add(FalseNine(_player));
-			return roles;
-
-		}
-
-		
-
-		private Role AdvanceForwardAttack(Player player)
-		{
-			int totalscore = (player.Acceleration * 5)
-				+ (player.Agility * 1)
-				+ (player.Anticipation * 1)
-				+ (player.Balance * 1)
-				+ (player.Composure * 3)
-				+ (player.Decisions * 1)
-				+ (player.Dribbling * 3)
-				+ (player.Finishing * 5)
-				+ (player.FirstTouch * 3)
-				+ (player.OffTheBall * 3)
-				+ (player.Pace * 5)
-				+ (player.Passing * 1)
-				+ (player.Stamina * 1)
-				+ (player.Technique * 3)
-				+ (player.WorkRate * 1);
-			float roleScore = ((float)totalscore / 37);
-
-			return new Role("Advance Forward attack", "afa", roleScore);
-		}
-
-		
-
-		private Role CompleteForwardSupport(Player player)
-		{
-			int totalscore = (player.Acceleration * 5)
-				+ (player.Agility * 3)
-				+ (player.Anticipation * 3)
-				+ (player.Balance * 1)
-				+ (player.Composure * 3)
-				+ (player.Decisions * 3)
-				+ (player.Dribbling * 3)
-				+ (player.Finishing * 5)
-				+ (player.FirstTouch * 3)
-				+ (player.Heading * 3)
-				+ (player.JumpingReach * 1)
-				+ (player.LongShots * 3)
-				+ (player.OffTheBall * 3)
-				+ (player.Pace * 5)
-				+ (player.Passing * 3)
-				+ (player.Stamina * 1)
-				+ (player.Strength * 3)
-				+ (player.Teamwork * 1)
-				+ (player.Technique * 3)
-				+ (player.Vision * 3)
-				+ (player.WorkRate * 1);
-			float roleScore = ((float)totalscore / 51);
-
-			return new Role("Complete Forward support", "cfs", roleScore); */
 		}
 	}
 }

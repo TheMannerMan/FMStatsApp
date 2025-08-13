@@ -9,18 +9,18 @@ namespace FMStatsApp.Pages
 {
 	public class DisplayPlayersModel : PageModel
 	{
-		//private readonly PlayerStorageService _service;
+		private readonly IPlayerSessionService _playerSession;
 
-		//public List<SelectListItem> AvailableFormations { get; set; } = new();
+		[BindProperty]
+		public PlayerFilter Filter { get; set; } = new();
 
-		//[BindProperty]
-		//public string SelectedFormation { get; set; }
+		[BindProperty]
+		public List<string> SelectedRoles { get; set; } = new();
 
-		//public List<Position> AvailablePositions { get; set; } = Enum.GetValues<Position>().ToList();
-
-
-		//[BindProperty]
-		//public Dictionary<Position, string> SelectedRoles { get; set; } = new();
+		public List<Player> Players { get; set; } = new();
+		public List<RoleDefinition> AvailableRoles { get; set; } = new();
+		public List<string> AvailablePositions { get; set; } = new();
+		public List<string> AvailableNationalities { get; set; } = new();
 
 		public List<string> ForwardRoles { get; set; } = RoleCatalog.AllRoles
 			.Where(r => r.GeneralPosition == GeneralPosition.Forward)
@@ -32,49 +32,93 @@ namespace FMStatsApp.Pages
 			.Select(r => r.Name)
 			.ToList();
 
-		[BindProperty]
-		public List<string> SelectedRolesToList { get; set; } = new List<string>();
+		public List<string> DefenderRoles { get; set; } = RoleCatalog.AllRoles
+			.Where(r => r.GeneralPosition == GeneralPosition.Defender)
+			.Select(r => r.Name)
+			.ToList();
 
-		[BindProperty]
-		public List<string> SelectedMidfielderRoles { get; set; } = new List<string>();
+		public List<string> GoalkeeperRoles { get; set; } = RoleCatalog.AllRoles
+			.Where(r => r.GeneralPosition == GeneralPosition.Goalkeeper)
+			.Select(r => r.Name)
+			.ToList();
 
-		[BindProperty]
-		public List<Player> Players { get; set; }
-
-		private readonly IHttpContextAccessor _httpContextAccessor;
-
-		public DisplayPlayersModel(IHttpContextAccessor httpContextAccessor)
+		public DisplayPlayersModel(IPlayerSessionService playerSession)
 		{
-			_httpContextAccessor = httpContextAccessor;
+			_playerSession = playerSession;
 		}
 
-		public IActionResult OnGet()
+		public async Task<IActionResult> OnGetAsync()
 		{
-			Players = _httpContextAccessor.HttpContext.Session.GetObjectFromJson<List<Player>>("Players");
-
-			/*AvailableFormations = FormationCatalog.AllFormations
-				.Select(f => new SelectListItem { Value = f.Name, Text = f.Name })
-				.ToList(); */
-
+			await LoadDataAsync();
 			return Page();
 		}
 
-		public IActionResult OnPost()
+		public async Task<IActionResult> OnPostFilterAsync()
 		{
-			Players = _httpContextAccessor.HttpContext.Session.GetObjectFromJson<List<Player>>("Players");
+			var allPlayers = await _playerSession.GetPlayersAsync();
+			Players = allPlayers.Where(p => Filter.Matches(p)).ToList();
+			await LoadDropdownDataAsync();
 			return Page();
 		}
 
-		/*public IActionResult OnPostFormation()
+		public async Task<IActionResult> OnPostShowRoleScoresAsync()
 		{
-			if (string.IsNullOrEmpty(SelectedFormation))
+			var allPlayers = await _playerSession.GetPlayersAsync();
+			
+			// Filter players and show only selected role scores
+			Players = allPlayers.Select(p => new Player
 			{
-				ModelState.AddModelError("SelectedFormation", "Välj en formation.");
-				return Page();
-			}
+				// Copy all player properties
+				Name = p.Name,
+				Age = p.Age,
+				Position = p.Position,
+				Nationality = p.Nationality,
+				Club = p.Club,
+				// Copy other necessary properties
+				Acceleration = p.Acceleration,
+				Agility = p.Agility,
+				Anticipation = p.Anticipation,
+				Balance = p.Balance,
+				Composure = p.Composure,
+				Decisions = p.Decisions,
+				Dribbling = p.Dribbling,
+				Finishing = p.Finishing,
+				FirstTouch = p.FirstTouch,
+				Heading = p.Heading,
+				JumpingReach = p.JumpingReach,
+				LongShots = p.LongShots,
+				Marking = p.Marking,
+				OffTheBall = p.OffTheBall,
+				Pace = p.Pace,
+				Passing = p.Passing,
+				Positioning = p.Positioning,
+				Stamina = p.Stamina,
+				Strength = p.Strength,
+				Tackling = p.Tackling,
+				Teamwork = p.Teamwork,
+				Technique = p.Technique,
+				Vision = p.Vision,
+				WorkRate = p.WorkRate,
+				// ... copy other attributes as needed
+				
+				Roles = p.Roles.Where(r => SelectedRoles.Contains(r.ShortName) || SelectedRoles.Contains(r.Name)).ToList()
+			}).ToList();
 
-			// Här kan vi hantera vad som händer när en formation väljs
-			return RedirectToPage("NextPage"); // Ändra till rätt sida
-		} */
+			await LoadDropdownDataAsync();
+			return Page();
+		}
+
+		private async Task LoadDataAsync()
+		{
+			Players = await _playerSession.GetPlayersAsync();
+			await LoadDropdownDataAsync();
+		}
+
+		private async Task LoadDropdownDataAsync()
+		{
+			AvailableRoles = RoleCatalog.AllRoles;
+			AvailablePositions = Players.Select(p => p.Position).Distinct().OrderBy(p => p).ToList();
+			AvailableNationalities = Players.Select(p => p.Nationality).Distinct().OrderBy(n => n).ToList();
+		}
 	}
 }

@@ -4,14 +4,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-//builder.Services.AddSingleton<PlayerStorageService>();
-builder.Services.AddTransient<HtmlParser>();
+
+// Session configuration
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromMinutes(180);
 	options.Cookie.HttpOnly = true;
 	options.Cookie.IsEssential = true;
 });
+
+// Register custom services
+builder.Services.AddScoped<IPlayerScoringService, PlayerScoringService>();
+builder.Services.AddScoped<IHtmlParserService, HtmlParserService>();
+builder.Services.AddScoped<IPlayerSessionService, PlayerSessionService>();
+
+// Legacy services (keep for backward compatibility during transition)
+builder.Services.AddTransient<HtmlParser>();
+builder.Services.AddTransient<ScoringCalculator>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

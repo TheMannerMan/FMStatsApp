@@ -1,4 +1,3 @@
-using FMStatsApp.Extensions;
 using FMStatsApp.Models;
 using FMStatsApp.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -11,42 +10,85 @@ namespace FMStatsApp.Pages
 {
 	public class UploadPlayersModel : PageModel
 	{
-		//private readonly PlayerStorageService _service;
-		private readonly HtmlParser _htmlParser;
-		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly IHtmlParserService _htmlParser;
+		private readonly IPlayerSessionService _playerSession;
+		private readonly ILogger<UploadPlayersModel> _logger;
 
 		[BindProperty]
 		public IFormFile UploadedFile { get; set; }
 
-		public IActionResult OnGet()
-		{
-			return Page();
-		}
-		public IActionResult OnPostUpload()
-		{
-			if (UploadedFile != null && UploadedFile.Length > 0)
-			{
-				using var stream = UploadedFile.OpenReadStream();
-				var parsedPlayers = _htmlParser.ParsedPlayers(stream);
+		public string StatusMessage { get; set; } = string.Empty;
+		public bool HasExistingData { get; private set; }
+		public int ExistingPlayerCount { get; private set; }
 
-				/*var json = JsonSerializer.Serialize(parsedPlayers);
-				Console.WriteLine(json);
-				var options = new JsonSerializerOptions
-				{
-					IncludeFields = true
-				};
-				var deserialized = JsonSerializer.Deserialize<List<Player>>(json, options); */
-
-				_httpContextAccessor.HttpContext.Session.SetObjectAsJson("Players", parsedPlayers);
-
-			}
-
-			return RedirectToPage("/DisplayPlayers");
-		}
-		public UploadPlayersModel(HtmlParser htmlParser, IHttpContextAccessor httpContextAccessor)
+		public UploadPlayersModel(
+			IHtmlParserService htmlParser, 
+			IPlayerSessionService playerSession,
+			ILogger<UploadPlayersModel> logger)
 		{
 			_htmlParser = htmlParser;
-			_httpContextAccessor = httpContextAccessor;
+			_playerSession = playerSession;
+			_logger = logger;
+		}
+
+		public async Task<IActionResult> OnGetAsync()
+		{
+			HasExistingData = _playerSession.HasPlayers();
+			if (HasExistingData)
+			{
+				ExistingPlayerCount = await _playerSession.GetPlayerCountAsync();
+			}
+			return Page();
+		}
+
+		public async Task<IActionResult> OnPostUploadAsync()
+		{
+			if (UploadedFile == null || UploadedFile.Length == 0)
+			{
+				StatusMessage = "Vänligen välj en HTML-fil att ladda upp.";
+				return Page();
+			}
+
+			if (!UploadedFile.FileName.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+			{
+				StatusMessage = "Endast HTML-filer är tillåtna.";
+				return Page();
+			}
+
+			try
+			{
+				using var stream = UploadedFile.OpenReadStream();
+				var parseResult = await _htmlParser.ParsePlayersAsync(stream);
+
+				if (!parseResult.Success)
+				{
+					StatusMessage = $"Fel vid parsning: {parseResult.ErrorMessage}";
+					return Page();
+				}
+
+				await _playerSession.SavePlayersAsync(parseResult.Players);
+				
+				TempData["SuccessMessage"] = $"Lyckades ladda upp {parseResult.SuccessfullyParsed} spelare!";
+				if (parseResult.ParseErrors.Any())
+				{
+					TempData["WarningMessage"] = $"Varningar: {parseResult.ParseErrors.Count} rader kunde inte parsas.";
+				}
+
+				return RedirectToPage("/DisplayPlayers");
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error uploading file: {FileName}", UploadedFile.FileName);
+				StatusMessage = "Ett oväntat fel inträffade vid uppladdning.";
+				return Page();
+			}
+		}
+
+		public async Task<IActionResult> OnPostClearDataAsync()
+		{
+			await _playerSession.ClearPlayersAsync();
+			TempData["InfoMessage"] = "Speldata har rensats.";
+			return RedirectToPage();
 		}
 	}
 }

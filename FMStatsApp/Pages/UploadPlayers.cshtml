@@ -1,10 +1,84 @@
 ﻿@page
 @model UploadPlayersModel
 @{
+    ViewData["Title"] = "Ladda upp spelare";
 }
-<form method="post" enctype="multipart/form-data">
-<div class="input-group">
-        <input type="file" class="form-control" id="inputGroupFile04" name="UploadedFile"  aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-        <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04" asp-page-handler="Upload">Button</button>
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-warning">
+            @Model.StatusMessage
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning">
+            @TempData["WarningMessage"]
+        </div>
+    }
+
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">
+            @TempData["InfoMessage"]
+        </div>
+    }
+
+    @if (Model.HasExistingData)
+    {
+        <div class="alert alert-info">
+            <h5>Befintlig data</h5>
+            <p>Du har redan @Model.ExistingPlayerCount spelare uppladdade.</p>
+            <form method="post" asp-page-handler="ClearData" class="d-inline">
+                <button type="submit" class="btn btn-warning btn-sm" 
+                        onclick="return confirm('Är du säker på att du vill rensa befintliga speldata?')">
+                    Rensa data
+                </button>
+            </form>
+            <a asp-page="/DisplayPlayers" class="btn btn-primary btn-sm">Visa befintliga spelare</a>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+                <div class="mb-3">
+                    <label asp-for="UploadedFile" class="form-label">Välj HTML-fil med speldata:</label>
+                    <input asp-for="UploadedFile" class="form-control" type="file" accept=".html" />
+                    <div class="form-text">Ladda upp en HTML-fil exporterad från Football Manager 2024.</div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Ladda upp och analysera
+                </button>
+            </form>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Instruktioner</h6>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Exportera speldata från FM24 som HTML</li>
+                        <li>Ladda upp filen här</li>
+                        <li>Applikationen analyserar alla spelare</li>
+                        <li>Se resultat och rollpoäng</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</form>

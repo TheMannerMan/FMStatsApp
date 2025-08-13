@@ -1,0 +1,27 @@
+﻿@page
+@model FMStatsApp.Pages.RoleSelecterModel
+@{
+}
+<h3>Assign Roles for: @Model.SelectedFormation.Name</h3>
+
+<form method="post">
+    <input type="hidden" name="SelectedFormationName" value="@Model.SelectedFormation.Name" />
+
+    <div class="row">
+        @foreach (var position in Model.SelectedFormation.Positions)
+        {
+            <div class="col-md-4 mb-3">
+                <label for="role_@position">@position</label>
+                <select name="SelectedRoles[@position]" class="form-select">
+                    <option value="">-- Select Role --</option>
+                    @foreach (var role in Model.GetRolesForPosition(position))
+                    {
+                        <option value="@role.Name">@role.Name</option>
+                    }
+                </select>
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Next</button>
+</form>

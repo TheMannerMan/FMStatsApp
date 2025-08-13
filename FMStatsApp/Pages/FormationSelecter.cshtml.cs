@@ -45,8 +45,8 @@ namespace FMStatsApp.Pages
 
 		public IActionResult OnPost()
 		{
-			SelectedFormation = FormationCatalog.AllFormations.Find(f => f.Name == SelectedFormationName);
-			return RedirectToPage("Formation", SelectedFormation);
+			//SelectedFormation = FormationCatalog.AllFormations.Find(f => f.Name == SelectedFormationName);
+			return RedirectToPage("RoleSelecter", new { formationName = SelectedFormationName });
 		}
 
 	}
