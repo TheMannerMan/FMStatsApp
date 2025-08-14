@@ -139,6 +139,51 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
+				Name: "Central Defender Cover",
+				ShortName: "CDC",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 3 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "Heading", 1 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 }
+				}),
+
+			new RoleDefinition(
+				Name: "Central Defender Stopper",
+				ShortName: "CDS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 3 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 }
+				}),
+
+			new RoleDefinition(
 				Name: "Ball-Playing Defender (Defend)",
 				ShortName: "BPDD",
 				GeneralPosition: GeneralPosition.Defender,
@@ -163,6 +208,123 @@ namespace FMStatsApp.Models
 					{ "Tackling", 3 },
 					{ "Technique", 3 },
 					{ "Vision", 3 }
+				}),
+
+			new RoleDefinition(
+				Name: "Ball Playing Defender Cover",
+				ShortName: "BPDC",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 3 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 1 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 }
+				}),
+
+			new RoleDefinition(
+				Name: "Ball Playing Defender Stopper",
+				ShortName: "BPDS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 3 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 }
+				}),
+
+			new RoleDefinition(
+				Name: "Nonsense Centre Back Cover",
+				ShortName: "NCBC",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 3 },
+					{ "Composure", 5 },
+					{ "Heading", 1 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 }
+				}),
+
+			new RoleDefinition(
+				Name: "Nonsense Centre Back Defend",
+				ShortName: "NCBD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 }
+				}),
+
+			new RoleDefinition(
+				Name: "Nonsense Centre Back Stopper",
+				ShortName: "NCBS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 3 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 }
 				}),
 
 			// FULL-BACK ROLES
