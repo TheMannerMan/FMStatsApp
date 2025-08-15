@@ -118,24 +118,26 @@ namespace FMStatsApp.Models
 
 			// CENTRAL DEFENDER ROLES
 			new RoleDefinition(
-				Name: "Central Defender (Defend)",
+				Name: "Central Defender Defend",
 				ShortName: "CDD",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
 				AttributeWeights: new Dictionary<string, int>
 				{
-					{ "Acceleration", 3 },
-					{ "AerialAbility", 5 },
-					{ "Anticipation", 3 },
-					{ "Bravery", 3 },
-					{ "Concentration", 3 },
-					{ "Heading", 5 },
-					{ "JumpingReach", 3 },
-					{ "Marking", 5 },
-					{ "Pace", 3 },
-					{ "Positioning", 5 },
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Decisions", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
 					{ "Strength", 3 },
-					{ "Tackling", 5 }
+					{ "Tackling", 3 }
 				}),
 
 			new RoleDefinition(
@@ -325,6 +327,155 @@ namespace FMStatsApp.Models
 					{ "Positioning", 3 },
 					{ "Strength", 3 },
 					{ "Tackling", 3 }
+				}),
+
+			new RoleDefinition(
+				Name: "Libero Defend",
+				ShortName: "LD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 3 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Stamina", 1 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 }
+				}),
+
+			new RoleDefinition(
+				Name: "Libero Support",
+				ShortName: "LS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Stamina", 1 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 1 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Centre Back Defend",
+				ShortName: "WCBD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 1 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Centre Back Support",
+				ShortName: "WCBS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Crossing", 1 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 1 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 1 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Centre Back Attack",
+				ShortName: "WCBA",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 5 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 5 },
+					{ "Marking", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 1 },
+					{ "Stamina", 3 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 1 }
 				}),
 
 			// FULL-BACK ROLES

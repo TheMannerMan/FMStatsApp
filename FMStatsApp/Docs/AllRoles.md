@@ -1,24 +1,27 @@
 ﻿**GK (Goalkeeper)**
-    * Goalkeeper (Defend) - GKD
-    * Sweeper Keeper (Defend) - SKD
-    * Sweeper Keeper (Support) - SKS
-    * Sweeper Keeper (Attack) - SKA
+    * Goalkeeper (Defend) - GKD OK 
+    * Sweeper Keeper (Defend) - SKD OK 
+    * Sweeper Keeper (Support) - SKS OK 
+    * Sweeper Keeper (Attack) - SKA OK 
 **DC (Central Defender)**
-    * Central Defender (Defend) - CDD
-    * Central Defender (Stopper) - CDSt
-    * Central Defender (Cover) - CDCv
-    * Ball-Playing Defender (Defend) - BPDD
-    * Ball-Playing Defender (Stopper) - BPDSt
-    * Ball-Playing Defender (Cover) - BPDCv
-    * No-Nonsense Centre-Back (Defend) - NCBD
-    * No-Nonsense Centre-Back (Stopper) - NCBSt
-    * No-Nonsense Centre-Back (Cover) - NCBCv
-    * Libero (Support) - LIBS
-    * Libero (Attack) - LIBA
+    * Central Defender (Defend) - CDD OK
+    * Central Defender (Stopper) - CDSt OK
+    * Central Defender (Cover) - CDCv OK
+    * Ball-Playing Defender (Defend) - BPDD OK
+    * Ball-Playing Defender (Stopper) - BPDS OK
+    * Ball-Playing Defender (Cover) - BPDC OK
+    * No-Nonsense Centre-Back (Defend) - NCBD OK
+    * No-Nonsense Centre-Back (Stopper) - NCBS OK
+    * No-Nonsense Centre-Back (Cover) - NCBC OK
+    * Libero (Defend) - LD OK
+    * Libero (Support) - LS OK
+    * Wide Centre-Back (Defend) - WCBD
+    * Wide Centre-Back (Support) - WCBS
+    * Wide Centre-Back (Attack) - WCBA
 **DR/DL (Right/Left Defender)**
-    * Full-Back (Defend) - FBD
-    * Full-Back (Support) - FBS
-    * Full-Back (Attack) - FBA
+    * Full-Back (Defend) - FBD OK
+    * Full-Back (Support) - FBS OK
+    * Full-Back (Attack) - FBA OK
     * No-Nonsense Full-Back (Defend) - NNFD
     * No-Nonsense Full-Back (Support) - NNFS
     * Wing-Back (Defend) - WBD
