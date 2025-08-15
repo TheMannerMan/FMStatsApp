@@ -22,16 +22,16 @@
     * Full-Back (Defend) - FBD OK
     * Full-Back (Support) - FBS OK
     * Full-Back (Attack) - FBA OK
-    * No-Nonsense Full-Back (Defend) - NNFD
-    * No-Nonsense Full-Back (Support) - NNFS
-    * Wing-Back (Defend) - WBD
-    * Wing-Back (Support) - WBS
-    * Wing-Back (Attack) - WBA
-    * Complete Wing-Back (Support) - CWBS
-    * Complete Wing-Back (Attack) - CWBA
-    * Inverted Wing-Back (Defend) - IWBD
-    * Inverted Wing-Back (Support) - IWBS
-    * Inverted Wing-Back (Attack) - IWBA
+    * No-Nonsense Full-Back (Defend) - NNFD OK
+    * Inverted Full-Back (Defend) IFBD
+    * Wing-Back (Defend) - WBD OK
+    * Wing-Back (Support) - WBS OK
+    * Wing-Back (Attack) - WBA OK
+    * Complete Wing-Back (Support) - CWBS OK
+    * Complete Wing-Back (Attack) - CWBA OK
+    * Inverted Wing-Back (Defend) - IWBD OK
+    * Inverted Wing-Back (Support) - IWBS OK
+    * Inverted Wing-Back (Attack) - IWBA OK
 **DM (Defensive Midfielder)**
     * Defensive Midfielder (Defend) - DMD
     * Defensive Midfielder (Support) - DMS

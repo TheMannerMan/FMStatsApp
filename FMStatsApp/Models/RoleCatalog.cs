@@ -265,7 +265,7 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Nonsense Centre Back Cover",
+				Name: "Nonsense Centre-Back Cover",
 				ShortName: "NCBC",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
@@ -286,7 +286,7 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Nonsense Centre Back Defend",
+				Name: "Nonsense Centre-Back Defend",
 				ShortName: "NCBD",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
@@ -308,7 +308,7 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Nonsense Centre Back Stopper",
+				Name: "Nonsense Centre-Back Stopper",
 				ShortName: "NCBS",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
@@ -386,7 +386,7 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Wide Centre Back Defend",
+				Name: "Wide Centre-Back Defend",
 				ShortName: "WCBD",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
@@ -415,7 +415,7 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Wide Centre Back Support",
+				Name: "Wide Centre-Back Support",
 				ShortName: "WCBS",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
@@ -447,7 +447,7 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Wide Centre Back Attack",
+				Name: "Wide Centre-Back Attack",
 				ShortName: "WCBA",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DC },
@@ -480,7 +480,7 @@ namespace FMStatsApp.Models
 
 			// FULL-BACK ROLES
 			new RoleDefinition(
-				Name: "Full-Back (Defend)",
+				Name: "Full Back Defend",
 				ShortName: "FBD",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DL, Position.DR },
@@ -489,16 +489,20 @@ namespace FMStatsApp.Models
 					{ "Acceleration", 5 },
 					{ "Anticipation", 3 },
 					{ "Concentration", 3 },
+					{ "Crossing", 1 },
+					{ "Decisions", 1 },
 					{ "Marking", 3 },
 					{ "Pace", 5 },
+					{ "Passing", 1 },
 					{ "Positioning", 3 },
-					{ "Stamina", 3 },
-					{ "Tackling", 5 },
-					{ "Teamwork", 3 }
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 1 },
+					{ "WorkRate", 5 }
 				}),
 
 			new RoleDefinition(
-				Name: "Full-Back (Support)",
+				Name: "Full Back Support",
 				ShortName: "FBS",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DL, Position.DR },
@@ -506,22 +510,23 @@ namespace FMStatsApp.Models
 				{
 					{ "Acceleration", 5 },
 					{ "Anticipation", 3 },
-					{ "Concentration", 1 },
-					{ "Crossing", 3 },
+					{ "Concentration", 3 },
+					{ "Crossing", 1 },
 					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
 					{ "Marking", 3 },
-					{ "OffTheBall", 1 },
 					{ "Pace", 5 },
 					{ "Passing", 1 },
 					{ "Positioning", 3 },
 					{ "Stamina", 5 },
 					{ "Tackling", 3 },
 					{ "Teamwork", 3 },
-					{ "WorkRate", 3 }
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
 				}),
 
 			new RoleDefinition(
-				Name: "Full-Back (Attack)",
+				Name: "Full-Back Attack",
 				ShortName: "FBA",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.DL, Position.DR },
@@ -548,10 +553,257 @@ namespace FMStatsApp.Models
 					{ "WorkRate", 5 }
 				}),
 
+			new RoleDefinition(
+				Name: "Inverted Full-Back Defend",
+				ShortName: "IFBD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL, Position.DR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 1 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Nonsense Full-Back Defend",
+				ShortName: "NFBD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL, Position.DR},
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Heading", 1 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Strength", 3 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 1 },
+					{ "WorkRate", 5 }
+				}),
+
 			// WING-BACK ROLES
 			new RoleDefinition(
-				Name: "Wing-Back (Support)",
+				Name: "Wing-Back Defend",
+				ShortName: "WBD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.WBL, Position.WBR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Concentration", 1 },
+					{ "Crossing", 1 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wing-Back Support",
 				ShortName: "WBS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL, Position.DR, Position.WBL, Position.WBR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Concentration", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wing-Back Attack",
+				ShortName: "WBA",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL, Position.DR, Position.WBL, Position.WBR  },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Concentration", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Flair", 1 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Complete Wing-Back Support",
+				ShortName: "CWBS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.WBL, Position.WBR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Flair", 1 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Complete Wing-Back Attack",
+				ShortName: "CWBA",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.WBL, Position.WBR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Flair", 3 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Inverted Wing-Back Defend",
+				ShortName: "IWBD",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL, Position.DR, Position.WBL, Position.WBR  },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Concentration", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Inverted Wing-Back Support",
+				ShortName: "IWBS",
+				GeneralPosition: GeneralPosition.Defender,
+				Positions: new List<Position> { Position.DL, Position.DR, Position.WBL, Position.WBR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 3 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Inverted Wing-Back Attack",
+				ShortName: "IWBA",
 				GeneralPosition: GeneralPosition.Defender,
 				Positions: new List<Position> { Position.WBL, Position.WBR },
 				AttributeWeights: new Dictionary<string, int>
@@ -560,43 +812,23 @@ namespace FMStatsApp.Models
 					{ "Agility", 1 },
 					{ "Anticipation", 1 },
 					{ "Concentration", 1 },
-					{ "Crossing", 5 },
-					{ "Decisions", 1 },
+					{ "Composure", 3 },
+					{ "Crossing", 1 },
+					{ "Decisions", 3 },
 					{ "Dribbling", 1 },
-					{ "FirstTouch", 1 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "LongShots", 1 },
 					{ "Marking", 1 },
 					{ "OffTheBall", 3 },
 					{ "Pace", 5 },
 					{ "Passing", 3 },
 					{ "Positioning", 1 },
 					{ "Stamina", 5 },
-					{ "Tackling", 1 },
+					{ "Tackling", 3 },
 					{ "Teamwork", 3 },
-					{ "Technique", 1 },
-					{ "WorkRate", 5 }
-				}),
-
-			new RoleDefinition(
-				Name: "Wing-Back (Attack)",
-				ShortName: "WBA",
-				GeneralPosition: GeneralPosition.Defender,
-				Positions: new List<Position> { Position.WBL, Position.WBR },
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "Acceleration", 5 },
-					{ "Agility", 3 },
-					{ "Anticipation", 1 },
-					{ "Crossing", 5 },
-					{ "Decisions", 1 },
-					{ "Dribbling", 3 },
-					{ "FirstTouch", 3 },
-					{ "Flair", 1 },
-					{ "OffTheBall", 5 },
-					{ "Pace", 5 },
-					{ "Passing", 3 },
-					{ "Stamina", 5 },
-					{ "Teamwork", 1 },
 					{ "Technique", 3 },
+					{ "Vision", 3 },
 					{ "WorkRate", 5 }
 				}),
 
