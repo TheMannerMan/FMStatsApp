@@ -834,29 +834,150 @@ namespace FMStatsApp.Models
 
 			// DEFENSIVE MIDFIELDER ROLES
 			new RoleDefinition(
-				Name: "Defensive Midfielder (Defend)",
+				Name: "Defensive Midfielder Defend",
 				ShortName: "DMD",
 				GeneralPosition: GeneralPosition.Midfielder,
 				Positions: new List<Position> { Position.DM },
 				AttributeWeights: new Dictionary<string, int>
 				{
-					{ "Acceleration", 3 },
-					{ "Anticipation", 5 },
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 3 },
 					{ "Concentration", 3 },
-					{ "Decisions", 3 },
-					{ "Marking", 5 },
-					{ "Pace", 3 },
-					{ "Positioning", 5 },
-					{ "Stamina", 3 },
-					{ "Strength", 3 },
-					{ "Tackling", 5 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
 					{ "Teamwork", 3 },
-					{ "WorkRate", 3 }
+					{ "WorkRate", 5 }
 				}),
 
 			new RoleDefinition(
-				Name: "Anchor Man (Defend)",
-				ShortName: "AND",
+				Name: "Defensive Midfielder Support",
+				ShortName: "DMS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 3 },
+					{ "Concentration", 3 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Deep Lying Playmaker Defend",
+				ShortName: "DLPD",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM, Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Deep Lying Playmaker Support",
+				ShortName: "DLPS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM, Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Ball Winning Midfielder Defend",
+				ShortName: "BWMD",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM, Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Ball Winning Midfielder Support",
+				ShortName: "BWMS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM, Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Bravery", 1 },
+					{ "Concentration", 1 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Stamina", 5 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Anchor Defend",
+				ShortName: "AD",
 				GeneralPosition: GeneralPosition.Midfielder,
 				Positions: new List<Position> { Position.DM },
 				AttributeWeights: new Dictionary<string, int>
@@ -877,25 +998,137 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Deep-Lying Playmaker (Defend)",
-				ShortName: "DLPD",
+				Name: "Half Back Defend",
+				ShortName: "HBD",
 				GeneralPosition: GeneralPosition.Midfielder,
 				Positions: new List<Position> { Position.DM },
 				AttributeWeights: new Dictionary<string, int>
 				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
 					{ "Anticipation", 3 },
-					{ "Composure", 5 },
+					{ "Bravery", 1 },
 					{ "Concentration", 3 },
-					{ "Decisions", 5 },
-					{ "FirstTouch", 5 },
-					{ "Marking", 1 },
-					{ "Passing", 5 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "JumpingReach", 1 },
+					{ "Marking", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
 					{ "Positioning", 3 },
-					{ "Stamina", 3 },
-					{ "Tackling", 1 },
+					{ "Stamina", 5 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
 					{ "Teamwork", 3 },
-					{ "Technique", 5 },
-					{ "Vision", 5 }
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Regista Support",
+				ShortName: "REGS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 3 },
+					{ "LongShots", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Roaming Playmaker Support",
+				ShortName: "RPS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM, Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "LongShots", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Segundo Volante Support",
+				ShortName: "SVS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "Finishing", 1 },
+					{ "FirstTouch", 1 },
+					{ "LongShots", 1 },
+					{ "Marking", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Strength", 1 },
+					{ "Tackling", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Segundo Volante Attack",
+				ShortName: "SVA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.DM },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "Finishing", 3 },
+					{ "FirstTouch", 1 },
+					{ "LongShots", 3 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "WorkRate", 5 }
 				}),
 
 			// CENTRAL MIDFIELDER ROLES

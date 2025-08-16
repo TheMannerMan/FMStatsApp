@@ -33,18 +33,18 @@
     * Inverted Wing-Back (Support) - IWBS OK
     * Inverted Wing-Back (Attack) - IWBA OK
 **DM (Defensive Midfielder)**
-    * Defensive Midfielder (Defend) - DMD
-    * Defensive Midfielder (Support) - DMS
-    * Deep-Lying Playmaker (Defend) - DLPD
-    * Deep-Lying Playmaker (Support) - DLPS
-    * Ball-Winning Midfielder (Defend) - BWMD
-    * Ball-Winning Midfielder (Support) - BWMS
-    * Anchor Man (Defend) - AND
-    * Half-Back (Defend) - HBD
-    * Regista (Support) - REGS
-    * Roaming Playmaker (Support) - RPMS
-    * Segundo Volante (Support) - SVS
-    * Segundo Volante (Attack) - SVA
+    * Defensive Midfielder (Defend) - DMD OK
+    * Defensive Midfielder (Support) - DMS OK
+    * Deep-Lying Playmaker (Defend) - DLPD OK
+    * Deep-Lying Playmaker (Support) - DLPS OK
+    * Ball-Winning Midfielder (Defend) - BWMD OK 
+    * Ball-Winning Midfielder (Support) - BWMS OK
+    * Anchor (Defend) - AD OK
+    * Half-Back (Defend) - HBD OK
+    * Regista (Support) - REGS OK
+    * Roaming Playmaker (Support) - RPMS OK
+    * Segundo Volante (Support) - SVS OK
+    * Segundo Volante (Attack) - SVA OK
 **MC (Central Midfielder)**
     * Central Midfielder (Defend) - CMD
     * Central Midfielder (Support) - CMS
