@@ -1362,6 +1362,82 @@ namespace FMStatsApp.Models
 				}),
 
 			// WINGER ROLES
+
+			new RoleDefinition(
+				Name: "Wide Midfielder Defend",
+				ShortName: "WMD",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Concentration", 3 },
+					{ "Composure", 1 },
+					{ "Crossing", 1 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Midfielder Support",
+				ShortName: "WMS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 1 },
+					{ "Crossing", 1 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Midfielder Attack",
+				ShortName: "WMA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Composure", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
 			new RoleDefinition(
 				Name: "Winger (Support)",
 				ShortName: "WGS",
