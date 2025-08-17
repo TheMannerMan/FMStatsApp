@@ -46,15 +46,15 @@
     * Segundo Volante (Support) - SVS OK
     * Segundo Volante (Attack) - SVA OK
 **MC (Central Midfielder)**
-    * Central Midfielder (Defend) - CMD
-    * Central Midfielder (Support) - CMS
-    * Central Midfielder (Attack) - CMA
-    * Box-to-Box Midfielder (Support) - BBMS
+    * Central Midfielder (Defend) - CMD OK
+    * Central Midfielder (Support) - CMS OK
+    * Central Midfielder (Attack) - CMA OK
+    * Box-to-Box Midfielder (Support) - BBMS OK
     * Mezzala (Support) - MEZS
     * Mezzala (Attack) - MEZA
     * Carrilero (Support) - CARS
-    * Advanced Playmaker (Support) - APS
-    * Advanced Playmaker (Attack) - APA
+    * Advanced Playmaker (Support) - APS OK
+    * Advanced Playmaker (Attack) - APA OK
 **MR/ML (Right/Left Midfielder)**
     * Wide Midfielder (Defend) - WMD
     * Wide Midfielder (Support) - WMS
