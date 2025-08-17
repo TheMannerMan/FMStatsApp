@@ -1132,24 +1132,77 @@ namespace FMStatsApp.Models
 				}),
 
 			// CENTRAL MIDFIELDER ROLES
+
 			new RoleDefinition(
-				Name: "Central Midfielder (Support)",
+				Name: "Central Midfielder Defend",
+				ShortName: "CMD",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Concentration", 3 },
+					{ "Composure", 1 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Central Midfielder Support",
 				ShortName: "CMS",
 				GeneralPosition: GeneralPosition.Midfielder,
 				Positions: new List<Position> { Position.MC },
 				AttributeWeights: new Dictionary<string, int>
 				{
-					{ "Anticipation", 3 },
-					{ "Composure", 3 },
-					{ "Decisions", 5 },
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Concentration", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 3 },
 					{ "FirstTouch", 3 },
-					{ "Passing", 5 },
-					{ "Positioning", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
 					{ "Stamina", 5 },
 					{ "Tackling", 3 },
-					{ "Teamwork", 5 },
-					{ "Technique", 3 },
-					{ "Vision", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Central Midfielder Attack",
+				ShortName: "CMA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.MC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 3 },
+					{ "FirstTouch", 3 },
+					{ "LongShots", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 1 },
+					{ "Technique", 1 },
+					{ "Vision", 1 },
 					{ "WorkRate", 5 }
 				}),
 
