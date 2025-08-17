@@ -1207,37 +1207,42 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Box-to-Box Midfielder (Support)",
-				ShortName: "BBMS",
+				Name: "Box To Box Midfielder Support",
+				ShortName: "B2BS",
 				GeneralPosition: GeneralPosition.Midfielder,
 				Positions: new List<Position> { Position.MC },
 				AttributeWeights: new Dictionary<string, int>
 				{
-					{ "Acceleration", 3 },
-					{ "Anticipation", 3 },
-					{ "Decisions", 3 },
-					{ "FirstTouch", 3 },
-					{ "Marking", 3 },
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "Finishing", 1 },
+					{ "FirstTouch", 1 },
+					{ "LongShots", 1 },
 					{ "OffTheBall", 3 },
-					{ "Pace", 3 },
+					{ "Pace", 5 },
 					{ "Passing", 3 },
-					{ "Positioning", 3 },
+					{ "Positioning", 1 },
 					{ "Stamina", 5 },
+					{ "Strength", 1 },
 					{ "Tackling", 3 },
-					{ "Teamwork", 5 },
-					{ "Technique", 3 },
+					{ "Teamwork", 3 },
+					{ "Technique", 1 },
 					{ "WorkRate", 5 }
 				}),
-
 			// ATTACKING MIDFIELDER ROLES
 			new RoleDefinition(
-				Name: "Advanced Playmaker (Support)",
+				Name: "Advanced Playmaker Support",
 				ShortName: "APS",
 				GeneralPosition: GeneralPosition.Midfielder,
-				Positions: new List<Position> { Position.AMC, Position.MC },
+				Positions: new List<Position> { Position.MC, Position.AMC },
 				AttributeWeights: new Dictionary<string, int>
 				{
-					{ "Acceleration", 3 },
+					{ "Acceleration", 5 },
 					{ "Agility", 1 },
 					{ "Anticipation", 1 },
 					{ "Composure", 3 },
@@ -1246,13 +1251,38 @@ namespace FMStatsApp.Models
 					{ "FirstTouch", 3 },
 					{ "Flair", 1 },
 					{ "OffTheBall", 3 },
-					{ "Pace", 3 },
-					{ "Passing", 5 },
-					{ "Stamina", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
 					{ "Teamwork", 3 },
 					{ "Technique", 3 },
-					{ "Vision", 5 },
-					{ "WorkRate", 3 }
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Advanced Playmaker Attack",
+				ShortName: "APA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.MC, Position.AMC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
 				}),
 
 			new RoleDefinition(
