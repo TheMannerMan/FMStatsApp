@@ -1779,7 +1779,83 @@ namespace FMStatsApp.Models
 					{ "Stamina", 5 },
 					{ "Technique", 1 },
 					{ "WorkRate", 5 }
-				})
+				}),
+
+			new RoleDefinition(
+				Name: "Attacking Midfielder Support",
+				ShortName: "AMS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.AMC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Composure", 1 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 3 },
+					{ "LongShots", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Technique", 3 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Attacking Midfielder Attack",
+				ShortName: "AMA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.AMC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Composure", 1 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 1 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 3 },
+					{ "LongShots", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Technique", 3 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Enganche Support",
+				ShortName: "ENGS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.AMC },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 1 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
 
 		};
 	}
