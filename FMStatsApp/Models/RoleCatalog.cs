@@ -1701,7 +1701,7 @@ namespace FMStatsApp.Models
 					{ "Composure", 3 },
 					{ "Decisions", 3 },
 					{ "Dribbling", 3 },
-					{ "Finishing", 5 },
+					{ "Finishing", 5 }, // Varför 5?
 					{ "FirstTouch", 3 },
 					{ "Flair", 3 },
 					{ "OffTheBall", 3 },
@@ -1857,6 +1857,80 @@ namespace FMStatsApp.Models
 					{ "WorkRate", 5 }
 				}),
 
+			new RoleDefinition(
+				Name: "Shadow Striker Attack",
+				ShortName: "SSA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AMC, Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Concentration", 1 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 3 },
+					{ "FirstTouch", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Stamina", 5 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Deep Lying Forward Support",
+				ShortName: "DLFS",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Strength", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 1 }
+					// Varför workrate och stamina inte med här?
+				}),
+			new RoleDefinition(
+				Name: "Deep Lying Forward Attack",
+				ShortName: "DLFA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Strength", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 1 }
+					// Varför workrate och stamina inte med här?
+				}),
 		};
 	}
 }
