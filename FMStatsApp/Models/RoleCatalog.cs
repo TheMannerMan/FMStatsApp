@@ -1861,7 +1861,7 @@ namespace FMStatsApp.Models
 				Name: "Shadow Striker Attack",
 				ShortName: "SSA",
 				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.AMC, Position.ST },
+				Positions: new List<Position> { Position.AMC},
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -1929,6 +1929,80 @@ namespace FMStatsApp.Models
 					{ "Teamwork", 3 },
 					{ "Technique", 3 },
 					{ "Vision", 1 }
+					// Varför workrate och stamina inte med här?
+				}),
+
+			new RoleDefinition(
+				Name: "Advanced Forward Attack",
+				ShortName: "AFA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Stamina", 1 },
+					{ "Technique", 3 },
+					{ "WorkRate", 1 }
+				}), // varför workrate och stamina 1?
+
+			new RoleDefinition(
+				Name: "Target Forward Support",
+				ShortName: "TFS",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 3 },
+					{ "Bravery", 3 },
+					{ "Composure", 1 },
+					{ "Decisions", 1 },
+					{ "Finishing", 5 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Strength", 3 },
+					{ "Teamwork", 3 }
+					// Varför workrate och stamina inte med här?
+				}),
+
+			new RoleDefinition(
+				Name: "Target Forward Attack",
+				ShortName: "TFA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 3 },
+					{ "Bravery", 3 },
+					{ "Composure", 3 },
+					{ "Decisions", 1 },
+					{ "Finishing", 5 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Strength", 3 },
+					{ "Teamwork", 1 }
 					// Varför workrate och stamina inte med här?
 				}),
 		};
