@@ -1707,10 +1707,78 @@ namespace FMStatsApp.Models
 					{ "OffTheBall", 3 },
 					{ "Pace", 5 },
 					{ "Passing", 3 },
-					{ "Stamina", 5 }, // Not included in the source code. Probaply a bug.
+					{ "Stamina", 5 }, // Not included in the source code. Probably a bug.
 					{ "Technique", 3 },
 					{ "Vision", 3 },
-					{ "WorkRate", 5 } //Not included in the source code. Probaply a bug.
+					{ "WorkRate", 5 } //Not included in the source code. Probably a bug.
+				}),
+			new RoleDefinition(
+				Name: "Wide Target Forward Attack",
+				ShortName: "WTFA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AML, Position.AMR},
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Bravery", 3 },
+					{ "Crossing", 1 },
+					{ "Finishing", 1 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Stamina", 5 },
+					{ "Strength", 3 },
+					{ "Teamwork", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Target Forward Support",
+				ShortName: "WTFS",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AML, Position.AMR},
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Bravery", 3 },
+					{ "Crossing", 1 },
+					{ "FirstTouch", 1 },
+					{ "Heading", 3 },
+					{ "JumpingReach", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Stamina", 5 },
+					{ "Strength", 3 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Raumdeuter Attack",
+				ShortName: "RAUA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AMR, Position.AML},
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Anticipation", 3 },
+					{ "Balance", 3 },
+					{ "Composure", 3 },
+					{ "Concentration", 3 },
+					{ "Decisions", 3 },
+					{ "Finishing", 3 },
+					{ "FirstTouch", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Stamina", 5 },
+					{ "Technique", 1 },
+					{ "WorkRate", 5 }
 				})
 
 		};
