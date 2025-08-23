@@ -1482,6 +1482,7 @@ namespace FMStatsApp.Models
 					{ "WorkRate", 5 }
 				}),
 
+
 			new RoleDefinition(
 				Name: "Inverted Winger Support",
 				ShortName: "IWS",
@@ -1533,6 +1534,107 @@ namespace FMStatsApp.Models
 					{ "Vision", 1 },
 					{ "WorkRate", 5 }
 				}),
+
+			new RoleDefinition(
+				Name: "Defensive Winger Defend",
+				ShortName: "DWD",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 3 },
+					{ "Concentration", 1 },
+					{ "Crossing", 1 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Positioning", 3 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Defensive Winger Support",
+				ShortName: "DWS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 1 },
+					{ "Anticipation", 1 },
+					{ "Composure", 1 },
+					{ "Concentration", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 1 },
+					{ "Marking", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Positioning", 1 },
+					{ "Stamina", 5 },
+					{ "Tackling", 1 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "WorkRate", 5 }
+				}),
+			new RoleDefinition(
+				Name: "Wide Playmaker Support",
+				ShortName: "WPS",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR},
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 1 },
+					{ "FirstTouch", 3 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Wide Playmaker Attack",
+				ShortName: "WPA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR, Position.AML, Position.AMR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Teamwork", 3 },
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 }
+				})
 
 		};
 	}
