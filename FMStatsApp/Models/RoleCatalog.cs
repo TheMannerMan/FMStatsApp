@@ -2084,6 +2084,85 @@ namespace FMStatsApp.Models
 					{ "Vision", 1 },
 					{ "WorkRate", 1 }
 				}), // Varför workrate och stamina 1?
+
+			new RoleDefinition(
+				Name: "Pressing Forward Defend",
+				ShortName: "PFD",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Bravery", 3 },
+					{ "Composure", 1 },
+					{ "Concentration", 1 },
+					{ "Decisions", 3 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 1 },
+					{ "Pace", 5 },
+					{ "Stamina", 3 },
+					{ "Strength", 1 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 3 }
+				}),
+			// Varför stamina och workrate inte 5?
+
+			new RoleDefinition(
+				Name: "Pressing Forward Support",
+				ShortName: "PFS",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Bravery", 3 },
+					{ "Composure", 1 },
+					{ "Concentration", 1 },
+					{ "Decisions", 3 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 1 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Stamina", 3 },
+					{ "Strength", 1 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 3 }
+				}),// Varför stamina och workrate inte 5?
+
+			new RoleDefinition(
+				Name: "Pressing Forward Attack",
+				ShortName: "PFA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Aggression", 3 },
+					{ "Agility", 1 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Bravery", 3 },
+					{ "Composure", 1 },
+					{ "Concentration", 1 },
+					{ "Decisions", 1 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Stamina", 3 },
+					{ "Strength", 1 },
+					{ "Teamwork", 3 },
+					{ "WorkRate", 3 }
+				}),// Varför stamina och workrate inte 5?
 		};
 	}
 }
