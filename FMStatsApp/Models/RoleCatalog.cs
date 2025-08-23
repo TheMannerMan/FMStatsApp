@@ -1439,226 +1439,101 @@ namespace FMStatsApp.Models
 				}),
 
 			new RoleDefinition(
-				Name: "Winger (Support)",
-				ShortName: "WGS",
+				Name: "Winger Support",
+				ShortName: "WS",
 				GeneralPosition: GeneralPosition.Midfielder,
-				Positions: new List<Position> { Position.MR, Position.ML },
+				Positions: new List<Position> { Position.ML, Position.MR, Position.AMR, Position.AML},
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
 					{ "Agility", 3 },
 					{ "Balance", 1 },
-					{ "Crossing", 5 },
-					{ "Decisions", 1 },
+					{ "Crossing", 3 },
 					{ "Dribbling", 3 },
-					{ "FirstTouch", 3 },
-					{ "Flair", 1 },
+					{ "FirstTouch", 1 },
 					{ "OffTheBall", 1 },
 					{ "Pace", 5 },
 					{ "Passing", 1 },
-					{ "Stamina", 3 },
-					{ "Teamwork", 3 },
+					{ "Stamina", 5 },
 					{ "Technique", 3 },
-					{ "WorkRate", 3 }
+					{ "WorkRate", 5 }
 				}),
 
 			new RoleDefinition(
-				Name: "Winger (Attack)",
-				ShortName: "WGA",
+				Name: "Winger Attack",
+				ShortName: "WA",
 				GeneralPosition: GeneralPosition.Midfielder,
-				Positions: new List<Position> { Position.MR, Position.ML },
+				Positions: new List<Position> { Position.ML, Position.MR, Position.AML, Position.AMR },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
 					{ "Agility", 3 },
-					{ "Balance", 3 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
 					{ "Crossing", 3 },
-					{ "Decisions", 1 },
-					{ "Dribbling", 5 },
-					{ "Finishing", 1 },
-					{ "FirstTouch", 3 },
-					{ "Flair", 3 },
-					{ "OffTheBall", 3 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 1 },
 					{ "Pace", 5 },
-					{ "Stamina", 3 },
+					{ "Passing", 1 },
+					{ "Stamina", 5 },
 					{ "Technique", 3 },
-					{ "WorkRate", 1 }
+					{ "WorkRate", 5 }
 				}),
 
 			new RoleDefinition(
-				Name: "Inverted Winger (Support)",
+				Name: "Inverted Winger Support",
 				ShortName: "IWS",
 				GeneralPosition: GeneralPosition.Midfielder,
-				Positions: new List<Position> { Position.MR, Position.ML },
+				Positions: new List<Position> { Position.ML, Position.MR, Position.AML, Position.AMR },
 				AttributeWeights: new Dictionary<string, int>
 				{
-					{ "Acceleration", 3 },
+					{ "Acceleration", 5 },
 					{ "Agility", 3 },
 					{ "Balance", 1 },
 					{ "Composure", 1 },
-					{ "Decisions", 3 },
-					{ "Dribbling", 5 },
-					{ "FirstTouch", 3 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
+					{ "LongShots", 1 },
+					{ "OffTheBall", 1 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 },
+					{ "Technique", 3 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Inverted Winger Attack",
+				ShortName: "IWA",
+				GeneralPosition: GeneralPosition.Midfielder,
+				Positions: new List<Position> { Position.ML, Position.MR, Position.AML, Position.AMR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 3 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 1 },
+					{ "Crossing", 3 },
+					{ "Decisions", 1 },
+					{ "Dribbling", 3 },
+					{ "FirstTouch", 1 },
 					{ "Flair", 1 },
 					{ "LongShots", 1 },
 					{ "OffTheBall", 1 },
-					{ "Pace", 3 },
-					{ "Passing", 3 },
-					{ "Stamina", 3 },
-					{ "Technique", 5 },
-					{ "Vision", 1 },
-					{ "WorkRate", 1 }
-				}),
-
-			// STRIKER ROLES
-			new RoleDefinition(
-				Name: "Advanced Forward (Attack)",
-				ShortName: "AFA",
-				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.ST },
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "Acceleration", 5 },
-					{ "Agility", 1 },
-					{ "Anticipation", 1 },
-					{ "Balance", 1 },
-					{ "Composure", 3 },
-					{ "Decisions", 1 },
-					{ "Dribbling", 3 },
-					{ "Finishing", 5 },
-					{ "FirstTouch", 3 },
-					{ "OffTheBall", 3 },
-					{ "Pace", 5 },
-					{ "Passing", 1 },
-					{ "Stamina", 1 },
-					{ "Technique", 3 },
-					{ "WorkRate", 1 },
-				}),
-
-			new RoleDefinition(
-				Name: "Complete Forward (Attack)",
-				ShortName: "CFA",
-				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.ST},
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "Acceleration", 5 },
-					{ "Agility", 3 },
-					{ "Anticipation", 3 },
-					{ "Balance", 1 },
-					{ "Composure", 3 },
-					{ "Decisions", 1 },
-					{ "Dribbling", 3 },
-					{ "Finishing", 5 },
-					{ "FirstTouch", 3 },
-					{ "Heading", 3 },
-					{ "JumpingReach", 1 },
-					{ "LongShots", 1 },
-					{ "OffTheBall", 3 },
-					{ "Pace", 5 },
-					{ "Passing", 1 },
-					{ "Stamina", 1 },
-					{ "Strength", 3 },
-					{ "Teamwork", 1 },
-					{ "Technique", 3 },
-					{ "Vision", 1 },
-					{ "WorkRate", 1 },
-				}),
-
-			new RoleDefinition(
-				Name:"Complete Forward (Support)",
-				ShortName: "CFS",
-				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.ST},
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "Acceleration", 5 },
-					{ "Agility", 3 },
-					{ "Anticipation", 3 },
-					{ "Balance", 1 },
-					{ "Composure", 3 },
-					{ "Decisions", 3 },
-					{ "Dribbling", 3 },
-					{ "Finishing", 5 },
-					{ "FirstTouch", 3 },
-					{ "Heading", 3 },
-					{ "JumpingReach", 1 },
-					{ "LongShots", 3 },
-					{ "OffTheBall", 3 },
 					{ "Pace", 5 },
 					{ "Passing", 3 },
-					{ "Stamina", 1 },
-					{ "Strength", 3 },
-					{ "Teamwork", 1 },
+					{ "Stamina", 5 },
 					{ "Technique", 3 },
-					{ "Vision", 3 },
-					{ "WorkRate", 1 }
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
 				}),
 
-			new RoleDefinition(
-				Name: "False Nine (Support)",
-				ShortName: "F9S",
-				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.ST},
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "Acceleration", 3 },
-					{ "Pace", 3 },
-					{ "Finishing", 3 },
-					{ "Dribbling", 5 },
-					{ "FirstTouch", 5 },
-					{ "Passing", 5 },
-					{ "Technique", 5 },
-					{ "Composure", 3 },
-					{ "Decisions", 5 },
-					{ "OffTheBall", 1 },
-					{ "Vision", 5 },
-					{ "Agility", 3 },
-					{ "Anticipation", 3 },
-					{ "Flair", 3 },
-					{ "Teamwork", 3 },
-					{ "Balance", 1 },
-				}),
-
-			new RoleDefinition(
-				Name: "Target Man (Attack)",
-				ShortName: "TMA",
-				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.ST },
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "AerialAbility", 5 },
-					{ "Anticipation", 1 },
-					{ "Balance", 3 },
-					{ "Bravery", 1 },
-					{ "Composure", 1 },
-					{ "Decisions", 1 },
-					{ "Finishing", 5 },
-					{ "Heading", 5 },
-					{ "JumpingReach", 5 },
-					{ "OffTheBall", 3 },
-					{ "Positioning", 3 },
-					{ "Strength", 5 },
-					{ "Teamwork", 1 }
-				}),
-
-			new RoleDefinition(
-				Name: "Poacher (Attack)",
-				ShortName: "POA",
-				GeneralPosition: GeneralPosition.Forward,
-				Positions: new List<Position> { Position.ST },
-				AttributeWeights: new Dictionary<string, int>
-				{
-					{ "Acceleration", 3 },
-					{ "Anticipation", 5 },
-					{ "Composure", 3 },
-					{ "Decisions", 1 },
-					{ "Finishing", 5 },
-					{ "FirstTouch", 3 },
-					{ "OffTheBall", 5 },
-					{ "Pace", 3 },
-					{ "Positioning", 5 }
-				})
 		};
 	}
 }
