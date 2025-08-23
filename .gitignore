@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Tailwind CSS source map
+wwwroot/css/tailwind.css.map

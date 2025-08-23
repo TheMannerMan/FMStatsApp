@@ -2,246 +2,311 @@
 @using FMStatsApp.Models
 @model DisplayPlayersModel
 @{
-    ViewData["Title"] = "Visa spelare";
+    ViewData["Title"] = "Players";
 }
 
-<div class="container">
-    <h1>@ViewData["Title"]</h1>
+<div class="mx-auto max-w-7xl px-4 py-10">
+    <h1 class="text-3xl font-semibold tracking-tight text-slate-100 mb-8">Players</h1>
 
     @if (!Model.Players.Any())
     {
-        <div class="alert alert-info">
-            <h5>Inga spelare hittades</h5>
-            <p>Ladda upp en HTML-fil med speldata för att komma igång.</p>
-            <a asp-page="/UploadPlayers" class="btn btn-primary">Ladda upp spelare</a>
+        <div class="rounded-xl border border-sky-500/30 bg-sky-500/10 p-8 text-slate-200">
+            <h5 class="text-lg font-semibold mb-2">No players found</h5>
+            <p class="text-sm text-slate-300 mb-4">Upload an HTML file with player data to get started.</p>
+            <a asp-page="/UploadPlayers" class="inline-flex items-center rounded-md bg-primary-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300">Upload players</a>
         </div>
     }
     else
     {
-        <!-- Filter Section -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Filter och inställningar</h5>
-            </div>
-            <div class="card-body">
-                <form method="post" asp-page-handler="Filter">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label asp-for="Filter.Position" class="form-label">Position</label>
-                            <select asp-for="Filter.Position" class="form-select">
-                                <option value="">Alla positioner</option>
-                                @foreach (var position in Model.AvailablePositions)
-                                {
-                                    <option value="@position">@position</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label asp-for="Filter.Nationality" class="form-label">Nationalitet</label>
-                            <select asp-for="Filter.Nationality" class="form-select">
-                                <option value="">Alla nationaliteter</option>
-                                @foreach (var nationality in Model.AvailableNationalities)
-                                {
-                                    <option value="@nationality">@nationality</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label asp-for="Filter.MinAge" class="form-label">Min ålder</label>
-                            <input asp-for="Filter.MinAge" class="form-control" type="number" min="15" max="50" />
-                        </div>
-                        <div class="col-md-2">
-                            <label asp-for="Filter.MaxAge" class="form-label">Max ålder</label>
-                            <input asp-for="Filter.MaxAge" class="form-control" type="number" min="15" max="50" />
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary">Filtrera</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+        <!-- Filters -->
+        <div class="mb-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-6 shadow">
+            <h2 class="text-lg font-medium text-slate-100 mb-4">Filters & settings</h2>
+            <form method="post" asp-page-handler="Filter" class="grid gap-4 md:grid-cols-6">
+                <div class="md:col-span-2">
+                    <label asp-for="Filter.Position" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Position</label>
+                    <select asp-for="Filter.Position" class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                        <option value="">All positions</option>
+                        @foreach (var position in Model.AvailablePositions)
+                        {
+                            <option value="@position">@position</option>
+                        }
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label asp-for="Filter.Nationality" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Nationality</label>
+                    <select asp-for="Filter.Nationality" class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                        <option value="">All nationalities</option>
+                        @foreach (var nationality in Model.AvailableNationalities)
+                        {
+                            <option value="@nationality">@nationality</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label asp-for="Filter.MinAge" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Min age</label>
+                    <input asp-for="Filter.MinAge" type="number" min="15" max="50" class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50" />
+                </div>
+                <div>
+                    <label asp-for="Filter.MaxAge" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Max age</label>
+                    <input asp-for="Filter.MaxAge" type="number" min="15" max="50" class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50" />
+                </div>
+                <div class="md:col-span-6 flex justify-end pt-2">
+                    <button type="submit" class="inline-flex items-center rounded-md bg-primary-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300">Apply</button>
+                </div>
+            </form>
         </div>
 
-        <!-- Role Selection Section -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5>Välj roller att visa</h5>
-            </div>
-            <div class="card-body">
-                <form method="post" asp-page-handler="ShowRoleScores">
-                    <div class="accordion" id="roleAccordion">
-                        <!-- Goalkeeper Roles -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="goalkeepersHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#goalkeepersCollapse" aria-expanded="false" aria-controls="goalkeepersCollapse">
-                                    Målvaktsroller (@Model.GoalkeeperRoles.Count)
-                                </button>
-                            </h2>
-                            <div id="goalkeepersCollapse" class="accordion-collapse collapse" aria-labelledby="goalkeepersHeading" data-bs-parent="#roleAccordion">
-                                <div class="accordion-body">
-                                    <div class="d-flex flex-wrap">
-                                        @foreach (var role in Model.GoalkeeperRoles)
-                                        {
-                                            <div class="form-check me-3 mb-2">
-                                                <input type="checkbox" class="form-check-input" id="gk_@role" name="SelectedRoles" value="@role" checked="@(Model.SelectedRoles.Contains(role))">
-                                                <label class="form-check-label" for="gk_@role">@role</label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+        <!-- Role Selection Accordion -->
+        <div class="mb-10 rounded-2xl border border-white/10 bg-white/5 backdrop-blur shadow overflow-hidden">
+            <button id="roleAccordionToggle" type="button" class="w-full flex items-center justify-between px-6 py-4 text-left focus:outline-none group">
+                <span class="text-lg font-medium text-slate-100">Select roles to display</span>
+                <span class="flex items-center gap-3 text-xs font-semibold tracking-wide uppercase text-slate-400">
+                    <span data-selected-count></span>
+                    <svg data-icon class="h-4 w-4 text-slate-400 transition-transform group-hover:text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" /></svg>
+                </span>
+            </button>
+            <div id="roleAccordionPanel" class="hidden border-t border-white/10">
+                <form method="post" asp-page-handler="ShowRoleScores" class="p-6 pt-4 space-y-6">
+                    <!-- Top action buttons -->
+                    <div class="flex flex-wrap gap-3">
+                        <button type="submit" class="inline-flex items-center rounded-md bg-emerald-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300">Show selected roles</button>
+                        <button type="button" id="clearRoleSelectionTop" class="inline-flex items-center rounded-md bg-rose-600 px-5 py-2 text-sm font-medium text-white shadow hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-400">Clear all</button>
+                    </div>
+
+                    <div>
+                        <label for="roleSearch" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Search roles</label>
+                        <input id="roleSearch" type="text" placeholder="Type to filter roles..." class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50" />
+                    </div>
+
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-h-[42vh] overflow-y-auto pr-2 custom-scroll" data-role-container>
+                        <div data-role-group>
+                            <h3 class="mb-3 text-sm font-semibold text-slate-200 tracking-wide">Goalkeeper (@Model.GoalkeeperRoles.Count)</h3>
+                            <div class="flex flex-col gap-2">
+                                @foreach (var role in Model.GoalkeeperRoles.OrderBy(r => r))
+                                {
+                                    <label class="inline-flex items-center gap-2 text-sm text-slate-300" data-role-item data-role-name="@role.ToLower()">
+                                        <input type="checkbox" name="SelectedRoles" value="@role" class="h-4 w-4 rounded border-white/10 bg-white/10 text-primary-500 focus:ring-primary-400" checked="@(Model.SelectedRoles.Contains(role))" />
+                                        <span>@role</span>
+                                    </label>
+                                }
                             </div>
                         </div>
-
-                        <!-- Defender Roles -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="defendersHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#defendersCollapse" aria-expanded="false" aria-controls="defendersCollapse">
-                                    Försvarsroller (@Model.DefenderRoles.Count)
-                                </button>
-                            </h2>
-                            <div id="defendersCollapse" class="accordion-collapse collapse" aria-labelledby="defendersHeading" data-bs-parent="#roleAccordion">
-                                <div class="accordion-body">
-                                    <div class="d-flex flex-wrap">
-                                        @foreach (var role in Model.DefenderRoles)
-                                        {
-                                            <div class="form-check me-3 mb-2">
-                                                <input type="checkbox" class="form-check-input" id="def_@role" name="SelectedRoles" value="@role" checked="@(Model.SelectedRoles.Contains(role))">
-                                                <label class="form-check-label" for="def_@role">@role</label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                        <div data-role-group>
+                            <h3 class="mb-3 text-sm font-semibold text-slate-200 tracking-wide">Defender (@Model.DefenderRoles.Count)</h3>
+                            <div class="flex flex-col gap-2">
+                                @foreach (var role in Model.DefenderRoles.OrderBy(r => r))
+                                {
+                                    <label class="inline-flex items-center gap-2 text-sm text-slate-300" data-role-item data-role-name="@role.ToLower()">
+                                        <input type="checkbox" name="SelectedRoles" value="@role" class="h-4 w-4 rounded border-white/10 bg-white/10 text-primary-500 focus:ring-primary-400" checked="@(Model.SelectedRoles.Contains(role))" />
+                                        <span>@role</span>
+                                    </label>
+                                }
                             </div>
                         </div>
-
-                        <!-- Midfielder Roles -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="midfieldersHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#midfieldersCollapse" aria-expanded="false" aria-controls="midfieldersCollapse">
-                                    Mittfältsroller (@Model.MidfielderRoles.Count)
-                                </button>
-                            </h2>
-                            <div id="midfieldersCollapse" class="accordion-collapse collapse" aria-labelledby="midfieldersHeading" data-bs-parent="#roleAccordion">
-                                <div class="accordion-body">
-                                    <div class="d-flex flex-wrap">
-                                        @foreach (var role in Model.MidfielderRoles)
-                                        {
-                                            <div class="form-check me-3 mb-2">
-                                                <input type="checkbox" class="form-check-input" id="mid_@role" name="SelectedRoles" value="@role" checked="@(Model.SelectedRoles.Contains(role))">
-                                                <label class="form-check-label" for="mid_@role">@role</label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                        <div data-role-group>
+                            <h3 class="mb-3 text-sm font-semibold text-slate-200 tracking-wide">Midfielder (@Model.MidfielderRoles.Count)</h3>
+                            <div class="flex flex-col gap-2">
+                                @foreach (var role in Model.MidfielderRoles.OrderBy(r => r))
+                                {
+                                    <label class="inline-flex items-center gap-2 text-sm text-slate-300" data-role-item data-role-name="@role.ToLower()">
+                                        <input type="checkbox" name="SelectedRoles" value="@role" class="h-4 w-4 rounded border-white/10 bg-white/10 text-primary-500 focus:ring-primary-400" checked="@(Model.SelectedRoles.Contains(role))" />
+                                        <span>@role</span>
+                                    </label>
+                                }
                             </div>
                         </div>
-
-                        <!-- Forward Roles -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="forwardsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#forwardsCollapse" aria-expanded="false" aria-controls="forwardsCollapse">
-                                    Anfallsroller (@Model.ForwardRoles.Count)
-                                </button>
-                            </h2>
-                            <div id="forwardsCollapse" class="accordion-collapse collapse" aria-labelledby="forwardsHeading" data-bs-parent="#roleAccordion">
-                                <div class="accordion-body">
-                                    <div class="d-flex flex-wrap">
-                                        @foreach (var role in Model.ForwardRoles)
-                                        {
-                                            <div class="form-check me-3 mb-2">
-                                                <input type="checkbox" class="form-check-input" id="fwd_@role" name="SelectedRoles" value="@role" checked="@(Model.SelectedRoles.Contains(role))">
-                                                <label class="form-check-label" for="fwd_@role">@role</label>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                        <div data-role-group>
+                            <h3 class="mb-3 text-sm font-semibold text-slate-200 tracking-wide">Forward (@Model.ForwardRoles.Count)</h3>
+                            <div class="flex flex-col gap-2">
+                                @foreach (var role in Model.ForwardRoles.OrderBy(r => r))
+                                {
+                                    <label class="inline-flex items-center gap-2 text-sm text-slate-300" data-role-item data-role-name="@role.ToLower()">
+                                        <input type="checkbox" name="SelectedRoles" value="@role" class="h-4 w-4 rounded border-white/10 bg-white/10 text-primary-500 focus:ring-primary-400" checked="@(Model.SelectedRoles.Contains(role))" />
+                                        <span>@role</span>
+                                    </label>
+                                }
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mt-3">
-                        <button type="submit" class="btn btn-success">Visa valda roller</button>
-                        <a asp-page="/UploadPlayers" class="btn btn-secondary">Ladda upp nya spelare</a>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button type="submit" class="inline-flex items-center rounded-md bg-emerald-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300">Show selected roles</button>
+                        <button type="button" id="clearRoleSelection" class="inline-flex items-center rounded-md bg-rose-600 px-5 py-2 text-sm font-medium text-white shadow hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-400">Clear all</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Players Table -->
-        @if (Model.Players.Any())
-        {
-            <div class="card">
-                <div class="card-header">
-                    <h5>Spelare (@Model.Players.Count)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Namn</th>
-                                    <th>Ålder</th>
-                                    <th>Position</th>
-                                    <th>Nationalitet</th>
-                                    <th>Klubb</th>
-                                    @foreach (var selectedRole in Model.SelectedRoles)
-                                    {
-                                        <th>@selectedRole</th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var player in Model.Players)
+        <div class="overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur shadow">
+            <div class="overflow-x-auto">
+                <table id="playersTable" class="min-w-full text-sm text-left text-slate-300">
+                    <thead class="bg-slate-800/60 text-xs uppercase tracking-wide text-slate-400 select-none">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="text">Name <span class="sort-indicator"></span></th>
+                            <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="number">Age <span class="sort-indicator"></span></th>
+                            <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="text">Position <span class="sort-indicator"></span></th>
+                            <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="text">Nationality <span class="sort-indicator"></span></th>
+                            <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="number">Wage <span class="sort-indicator"></span></th>
+                            <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="text">Club <span class="sort-indicator"></span></th>
+                            @foreach (var selectedRole in Model.SelectedRoles)
+                            {
+                                <th class="px-4 py-3 font-semibold cursor-pointer" data-sort="number" data-role-header="@selectedRole">@selectedRole <span class="sort-indicator"></span></th>
+                            }
+                            <th class="px-4 py-3 font-semibold text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var player in Model.Players)
+                        {
+                            <tr class="border-t border-white/5 hover:bg-white/5">
+                                <td class="px-4 py-3 font-medium text-slate-200" data-value="@player.Name">@player.Name</td>
+                                <td class="px-4 py-3" data-value="@player.Age">@player.Age</td>
+                                <td class="px-4 py-3" data-value="@player.Position"><span class="inline-flex items-center rounded bg-primary-500/20 px-2 py-0.5 text-xs font-medium text-primary-300 ring-1 ring-inset ring-primary-400/30">@player.Position</span></td>
+                                <td class="px-4 py-3" data-value="@player.Nationality">@player.Nationality</td>
+                                <td class="px-4 py-3" data-value="@player.Wage">@((player.Wage > 0) ? $"€{player.Wage:N0} p/w" : "€0 p/w")</td>
+                                <td class="px-4 py-3" data-value="@player.Club">@player.Club</td>
+                                @foreach (var selectedRole in Model.SelectedRoles)
                                 {
-                                    <tr>
-                                        <td><strong>@player.Name</strong></td>
-                                        <td>@player.Age</td>
-                                        <td><span class="badge bg-primary">@player.Position</span></td>
-                                        <td>@player.Nationality</td>
-                                        <td>@player.Club</td>
-                                        @foreach (var selectedRole in Model.SelectedRoles)
-                                        {
-                                            var roleData = player.Roles.FirstOrDefault(r => r.Name == selectedRole || r.RoleName == selectedRole);
-                                            <td>
-                                                @if (roleData != null)
-                                                {
-                                                    var score = roleData.RoleScore > 0 ? roleData.RoleScore : roleData.Score;
-                                                    var badgeClass = score >= 15 ? "bg-success" : score >= 12 ? "bg-warning" : "bg-danger";
-                                                    <span class="badge @badgeClass">@score.ToString("F1")</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-secondary">N/A</span>
-                                                }
-                                            </td>
-                                        }
-                                    </tr>
+                                    var roleData = player.Roles.FirstOrDefault(r => r.Name == selectedRole || r.RoleName == selectedRole);
+                                    if (roleData != null)
+                                    {
+                                        var score = roleData.RoleScore > 0 ? roleData.RoleScore : roleData.Score;
+                                        var colorClass = score >= 15 ? "bg-emerald-500/20 text-emerald-300 ring-emerald-400/30" : score >= 12 ? "bg-amber-500/20 text-amber-300 ring-amber-400/30" : "bg-rose-500/20 text-rose-300 ring-rose-400/30";
+                                        <td class="px-4 py-3" data-value="@score.ToString(System.Globalization.CultureInfo.InvariantCulture)"><span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold ring-1 ring-inset @colorClass">@score.ToString("F1")</span></td>
+                                    }
+                                    else
+                                    {
+                                        <td class="px-4 py-3" data-value="-1"><span class="inline-flex items-center rounded bg-slate-600/40 px-2 py-0.5 text-xs font-semibold text-slate-300 ring-1 ring-inset ring-slate-500/40">N/A</span></td>
+                                    }
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                <td class="px-4 py-3">
+                                    <form method="post" asp-page-handler="DeletePlayer" asp-route-uid="@player.UID" onsubmit="return confirm('Ta bort spelare @player.Name?');" style="display:inline">
+                                        <button type="submit" aria-label="Remove player" title="Remove" class="inline-flex items-center justify-center p-1 text-rose-500 hover:text-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-500/40 rounded">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="sr-only">Remove</span>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        }
+        </div>
     }
 </div>
 
 @section Scripts {
     <script>
-        // Auto-expand accordion sections with selected roles
-        document.addEventListener('DOMContentLoaded', function() {
-            const checkboxes = document.querySelectorAll('input[name="SelectedRoles"]:checked');
-            checkboxes.forEach(function(checkbox) {
-                const accordion = checkbox.closest('.accordion-collapse');
-                if (accordion) {
-                    accordion.classList.add('show');
-                    const button = accordion.previousElementSibling.querySelector('.accordion-button');
-                    if (button) {
-                        button.classList.remove('collapsed');
-                        button.setAttribute('aria-expanded', 'true');
-                    }
+        (function () {
+            // Accordion logic
+            const toggleBtn = document.getElementById('roleAccordionToggle');
+            const panel = document.getElementById('roleAccordionPanel');
+            const icon = toggleBtn?.querySelector('[data-icon]');
+            const searchInput = document.getElementById('roleSearch');
+            const clearBtn = document.getElementById('clearRoleSelection');
+            const clearBtnTop = document.getElementById('clearRoleSelectionTop');
+            const selectedCountSpan = toggleBtn?.querySelector('[data-selected-count]');
+
+            function updateSelectedCount() {
+                const count = panel.querySelectorAll('input[name="SelectedRoles"]:checked').length;
+                if (selectedCountSpan) {
+                    selectedCountSpan.textContent = count > 0 ? `${count} selected` : '';
+                }
+            }
+
+            toggleBtn?.addEventListener('click', () => {
+                panel.classList.toggle('hidden');
+                if (icon) icon.classList.toggle('rotate-180');
+                if (!panel.classList.contains('hidden')) {
+                    setTimeout(() => searchInput?.focus(), 50);
                 }
             });
-        });
+
+            searchInput?.addEventListener('input', () => {
+                const q = searchInput.value.trim().toLowerCase();
+                const items = panel.querySelectorAll('[data-role-item]');
+                items.forEach(item => {
+                    const name = item.getAttribute('data-role-name');
+                    const visible = !q || (name && name.includes(q));
+                    item.classList.toggle('hidden', !visible);
+                });
+                const groups = panel.querySelectorAll('[data-role-group]');
+                groups.forEach(g => {
+                    const anyVisible = [...g.querySelectorAll('[data-role-item]')].some(i => !i.classList.contains('hidden'));
+                    g.classList.toggle('opacity-40', !anyVisible);
+                });
+            });
+
+            function clearSelection() {
+                panel.querySelectorAll('input[type="checkbox"][name="SelectedRoles"]').forEach(cb => cb.checked = false);
+                updateSelectedCount();
+            }
+
+            clearBtn?.addEventListener('click', clearSelection);
+            clearBtnTop?.addEventListener('click', clearSelection);
+
+            panel.addEventListener('change', e => {
+                if (e.target.matches('input[name="SelectedRoles"]')) updateSelectedCount();
+            });
+
+            updateSelectedCount();
+
+            // Table sorting logic
+            const table = document.getElementById('playersTable');
+            if (!table) return;
+            const tbody = table.querySelector('tbody');
+            let currentSortIndex = -1;
+            let currentSortDir = 1; // 1 asc, -1 desc
+
+            function clearIndicators(exceptIndex) {
+                table.querySelectorAll('thead th').forEach((th, i) => {
+                    const ind = th.querySelector('.sort-indicator');
+                    if (ind) {
+                        if (i === exceptIndex) {
+                            ind.textContent = currentSortDir === 1 ? '▲' : '▼';
+                        } else {
+                            ind.textContent = '';
+                        }
+                    }
+                });
+            }
+
+            function sortRows(index, type) {
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    const aCell = a.children[index];
+                    const bCell = b.children[index];
+                    if (!aCell || !bCell) return 0;
+                    let aVal = aCell.getAttribute('data-value') ?? aCell.textContent.trim();
+                    let bVal = bCell.getAttribute('data-value') ?? bCell.textContent.trim();
+                    if (type === 'number') {
+                        const aNum = parseFloat(aVal.replace(/[^0-9.\-]/g, ''));
+                        const bNum = parseFloat(bVal.replace(/[^0-9.\-]/g, ''));
+                        return (aNum - bNum) * currentSortDir;
+                    } else {
+                        return aVal.localeCompare(bVal, undefined, { sensitivity: 'base' }) * currentSortDir;
+                    }
+                });
+                // Re-append
+                rows.forEach(r => tbody.appendChild(r));
+                clearIndicators(index);
+            }
+
+            table.querySelectorAll('thead th[data-sort]').forEach((th, index) => {
+                th.addEventListener('click', () => {
+                    const type = th.getAttribute('data-sort');
+                    if (currentSortIndex === index) {
+                        currentSortDir = -currentSortDir; // toggle
+                    } else {
+                        currentSortIndex = index;
+                        currentSortDir = 1;
+                    }
+                    sortRows(index, type);
+                });
+            });
+        })();
     </script>
 }

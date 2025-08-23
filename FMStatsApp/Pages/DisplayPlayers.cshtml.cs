@@ -65,16 +65,29 @@ namespace FMStatsApp.Pages
 		{
 			var allPlayers = await _playerSession.GetPlayersAsync();
 			
-			// Filter players and show only selected role scores
+			// Filter players and show only selected role scores (ensure Wage etc copied)
 			Players = allPlayers.Select(p => new Player
 			{
-				// Copy all player properties
+				// Basic info
 				Name = p.Name,
 				Age = p.Age,
 				Position = p.Position,
 				Nationality = p.Nationality,
 				Club = p.Club,
-				// Copy other necessary properties
+				Wage = p.Wage, // ensure wage persists
+				TransferValue = p.TransferValue,
+				Reg = p.Reg,
+				Inf = p.Inf,
+				SecondNationality = p.SecondNationality,
+				Personality = p.Personality,
+				MediaHandling = p.MediaHandling,
+				AverageRating = p.AverageRating,
+				LeftFoot = p.LeftFoot,
+				RightFoot = p.RightFoot,
+				Height = p.Height,
+				UID = p.UID,
+				Corners = p.Corners,
+				// Attributes
 				Acceleration = p.Acceleration,
 				Agility = p.Agility,
 				Anticipation = p.Anticipation,
@@ -99,12 +112,39 @@ namespace FMStatsApp.Pages
 				Technique = p.Technique,
 				Vision = p.Vision,
 				WorkRate = p.WorkRate,
-				// ... copy other attributes as needed
-				
+				AerialAbility = p.AerialAbility,
+				Aggression = p.Aggression,
+				Bravery = p.Bravery,
+				CommandOfArea = p.CommandOfArea,
+				Concentration = p.Concentration,
+				Determination = p.Determination,
+				Flair = p.Flair,
+				Handling = p.Handling,
+				Kicking = p.Kicking,
+				Leadership = p.Leadership,
+				Reflexes = p.Reflexes,
+				Throwing = p.Throwing,
+				ThrowOuts = p.ThrowOuts,
+				OneVsOne = p.OneVsOne,
+				// Roles filtered
 				Roles = p.Roles.Where(r => SelectedRoles.Contains(r.ShortName) || SelectedRoles.Contains(r.Name)).ToList()
 			}).ToList();
 
 			await LoadDropdownDataAsync();
+			return Page();
+		}
+
+		public async Task<IActionResult> OnPostDeletePlayerAsync(long uid)
+		{
+			var players = await _playerSession.GetPlayersAsync();
+			var toRemove = players.FirstOrDefault(p => p.UID == uid);
+			if (toRemove != null)
+			{
+				players.Remove(toRemove);
+				await _playerSession.SavePlayersAsync(players);
+			}
+			await LoadDropdownDataAsync();
+			Players = players;
 			return Page();
 		}
 

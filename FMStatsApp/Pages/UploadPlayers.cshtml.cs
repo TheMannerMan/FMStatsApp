@@ -45,13 +45,13 @@ namespace FMStatsApp.Pages
 		{
 			if (UploadedFile == null || UploadedFile.Length == 0)
 			{
-				StatusMessage = "Vänligen välj en HTML-fil att ladda upp.";
+				StatusMessage = "Please select an HTML file to upload.";
 				return Page();
 			}
 
 			if (!UploadedFile.FileName.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
 			{
-				StatusMessage = "Endast HTML-filer är tillåtna.";
+				StatusMessage = "Only HTML files are allowed.";
 				return Page();
 			}
 
@@ -62,16 +62,16 @@ namespace FMStatsApp.Pages
 
 				if (!parseResult.Success)
 				{
-					StatusMessage = $"Fel vid parsning: {parseResult.ErrorMessage}";
+					StatusMessage = $"Parsing error: {parseResult.ErrorMessage}";
 					return Page();
 				}
 
 				await _playerSession.SavePlayersAsync(parseResult.Players);
 				
-				TempData["SuccessMessage"] = $"Lyckades ladda upp {parseResult.SuccessfullyParsed} spelare!";
+				TempData["SuccessMessage"] = $"Successfully uploaded {parseResult.SuccessfullyParsed} players!";
 				if (parseResult.ParseErrors.Any())
 				{
-					TempData["WarningMessage"] = $"Varningar: {parseResult.ParseErrors.Count} rader kunde inte parsas.";
+					TempData["WarningMessage"] = $"Warnings: {parseResult.ParseErrors.Count} rows could not be parsed.";
 				}
 
 				return RedirectToPage("/DisplayPlayers");
@@ -79,7 +79,7 @@ namespace FMStatsApp.Pages
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error uploading file: {FileName}", UploadedFile.FileName);
-				StatusMessage = "Ett oväntat fel inträffade vid uppladdning.";
+				StatusMessage = "An unexpected error occurred while uploading.";
 				return Page();
 			}
 		}
@@ -87,7 +87,7 @@ namespace FMStatsApp.Pages
 		public async Task<IActionResult> OnPostClearDataAsync()
 		{
 			await _playerSession.ClearPlayersAsync();
-			TempData["InfoMessage"] = "Speldata har rensats.";
+			TempData["InfoMessage"] = "Player data has been cleared.";
 			return RedirectToPage();
 		}
 	}
