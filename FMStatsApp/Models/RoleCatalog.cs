@@ -1239,7 +1239,7 @@ namespace FMStatsApp.Models
 				Name: "Advanced Playmaker Support",
 				ShortName: "APS",
 				GeneralPosition: GeneralPosition.Midfielder,
-				Positions: new List<Position> { Position.MC, Position.AMC },
+				Positions: new List<Position> { Position.MC, Position.AMC, Position.AMR, Position.AML },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -1264,7 +1264,7 @@ namespace FMStatsApp.Models
 				Name: "Advanced Playmaker Attack",
 				ShortName: "APA",
 				GeneralPosition: GeneralPosition.Midfielder,
-				Positions: new List<Position> { Position.MC, Position.AMC },
+				Positions: new List<Position> { Position.MC, Position.AMC, Position.AMR, Position.AML },
 				AttributeWeights: new Dictionary<string, int>
 				{
 					{ "Acceleration", 5 },
@@ -1634,6 +1634,83 @@ namespace FMStatsApp.Models
 					{ "Technique", 3 },
 					{ "Vision", 3 },
 					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Inside Forward Support",
+				ShortName: "IFS",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AML, Position.AMR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 3 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 1 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 3 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "LongShots", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Stamina", 5 },
+					{ "Technique", 3 },
+					{ "Vision", 1 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Inside Forward Attack",
+				ShortName: "IFA",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AML, Position.AMR },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 3 },
+					{ "Anticipation", 3 },
+					{ "Balance", 1 },
+					{ "Composure", 1 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 3 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "LongShots", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 1 },
+					{ "Stamina", 5 },
+					{ "Technique", 3 },
+					{ "WorkRate", 5 }
+				}),
+
+			new RoleDefinition(
+				Name: "Trequartista Attack",
+				ShortName: "TREQ",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.AMC, Position.AML, Position.AMR, Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 1 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 5 },
+					{ "FirstTouch", 3 },
+					{ "Flair", 3 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Stamina", 5 }, // Not included in the source code. Probaply a bug.
+					{ "Technique", 3 },
+					{ "Vision", 3 },
+					{ "WorkRate", 5 } //Not included in the source code. Probaply a bug.
 				})
 
 		};
