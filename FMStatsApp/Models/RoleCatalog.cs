@@ -2163,6 +2163,31 @@ namespace FMStatsApp.Models
 					{ "Teamwork", 3 },
 					{ "WorkRate", 3 }
 				}),// Varför stamina och workrate inte 5?
+
+			new RoleDefinition(
+				Name: "False nine",
+				ShortName: "F9",
+				GeneralPosition: GeneralPosition.Forward,
+				Positions: new List<Position> { Position.ST },
+				AttributeWeights: new Dictionary<string, int>
+				{
+					{ "Acceleration", 5 },
+					{ "Agility", 3 },
+					{ "Anticipation", 1 },
+					{ "Balance", 1 },
+					{ "Composure", 3 },
+					{ "Decisions", 3 },
+					{ "Dribbling", 3 },
+					{ "Finishing", 5 }, // varför 5?
+					{ "FirstTouch", 3 },
+					{ "Flair", 1 },
+					{ "OffTheBall", 3 },
+					{ "Pace", 5 },
+					{ "Passing", 3 },
+					{ "Teamwork", 1 },
+					{ "Technique", 3 },
+					{ "Vision", 3 }
+				}),// Varför stamina och workrate inte 5?
 		};
 	}
 }
