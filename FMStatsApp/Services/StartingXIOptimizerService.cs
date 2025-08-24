@@ -21,13 +21,12 @@ namespace FMStatsApp.Services
 		{
 			try
 			{
-				// Separera låsta och olåsta positioner
-				var lockedPositions = positions.Where(p => p.IsLocked).ToList();
-				var unlockedPositions = positions.Where(p => !p.IsLocked).ToList();
+				// Separera helt låsta positioner från delvis eller helt olåsta
+				var fullyLockedPositions = positions.Where(p => p.IsPlayerLocked && p.HasSelectedPlayer).ToList();
+				var positionsToOptimize = positions.Where(p => !p.IsPlayerLocked || !p.HasSelectedPlayer).ToList();
 
-				// Skapa lista över spelare som redan är assignade till låsta positioner
-				var assignedPlayerIds = lockedPositions
-					.Where(p => p.HasSelectedPlayer)
+				// Skapa lista över spelare som redan är assignade till helt låsta positioner
+				var assignedPlayerIds = fullyLockedPositions
 					.Select(p => p.SelectedPlayerId!.Value)
 					.ToHashSet();
 
@@ -36,10 +35,10 @@ namespace FMStatsApp.Services
 					.Where(p => !assignedPlayerIds.Contains(p.UID))
 					.ToList();
 
-				if (!unlockedPositions.Any())
+				if (!positionsToOptimize.Any())
 				{
-					// Alla positioner är låsta, returnera befintliga assignments
-					return CreateResultFromLockedPositions(lockedPositions);
+					// Alla positioner har låsta spelare, returnera befintliga assignments
+					return CreateResultFromExistingPositions(positions);
 				}
 
 				if (!availablePlayersForOptimization.Any())
@@ -51,12 +50,12 @@ namespace FMStatsApp.Services
 					};
 				}
 
-				// Skapa kostmatris för olåsta positioner
-				var costMatrix = new double[unlockedPositions.Count, availablePlayersForOptimization.Count];
+				// Skapa kostmatris för positioner som behöver optimeras
+				var costMatrix = new double[positionsToOptimize.Count, availablePlayersForOptimization.Count];
 				
-				for (int i = 0; i < unlockedPositions.Count; i++)
+				for (int i = 0; i < positionsToOptimize.Count; i++)
 				{
-					var position = unlockedPositions[i];
+					var position = positionsToOptimize[i];
 					var bestRole = GetBestRoleForPosition(position.Position, position.SelectedRole, position.IsRoleLocked);
 					
 					for (int j = 0; j < availablePlayersForOptimization.Count; j++)
@@ -70,19 +69,35 @@ namespace FMStatsApp.Services
 				// Kör Hungarian algoritm
 				var (assignment, totalCost) = HungarianAlgorithm.Solve(costMatrix);
 				
-				// Skapa resultat för optimerade positioner
-				var optimizedAssignments = new List<PlayerAssignment>();
+				// Skapa resultat för alla positioner
+				var allAssignments = new List<PlayerAssignment>();
 				
-				for (int i = 0; i < Math.Min(assignment.Length, unlockedPositions.Count); i++)
+				// Lägg till låsta assignments först
+				foreach (var lockedPos in fullyLockedPositions)
+				{
+					var role = GetBestRoleForPosition(lockedPos.Position, lockedPos.SelectedRole, lockedPos.IsRoleLocked);
+					var score = CalculatePlayerRoleScore(lockedPos.SelectedPlayer!, role);
+					
+					allAssignments.Add(new PlayerAssignment
+					{
+						Position = lockedPos,
+						Player = lockedPos.SelectedPlayer!,
+						Role = role,
+						Score = score
+					});
+				}
+				
+				// Lägg till optimerade assignments
+				for (int i = 0; i < Math.Min(assignment.Length, positionsToOptimize.Count); i++)
 				{
 					if (assignment[i] < availablePlayersForOptimization.Count)
 					{
-						var position = unlockedPositions[i];
+						var position = positionsToOptimize[i];
 						var player = availablePlayersForOptimization[assignment[i]];
 						var bestRole = GetBestRoleForPosition(position.Position, position.SelectedRole, position.IsRoleLocked);
 						var score = CalculatePlayerRoleScore(player, bestRole);
 						
-						optimizedAssignments.Add(new PlayerAssignment
+						allAssignments.Add(new PlayerAssignment
 						{
 							Position = position,
 							Player = player,
@@ -91,30 +106,6 @@ namespace FMStatsApp.Services
 						});
 					}
 				}
-
-				// Kombinera låsta och optimerade assignments
-				var allAssignments = new List<PlayerAssignment>();
-				
-				// Lägg till låsta assignments
-				foreach (var lockedPos in lockedPositions)
-				{
-					if (lockedPos.HasSelectedPlayer)
-					{
-						var role = GetBestRoleForPosition(lockedPos.Position, lockedPos.SelectedRole, lockedPos.IsRoleLocked);
-						var score = CalculatePlayerRoleScore(lockedPos.SelectedPlayer!, role);
-						
-						allAssignments.Add(new PlayerAssignment
-						{
-							Position = lockedPos,
-							Player = lockedPos.SelectedPlayer!,
-							Role = role,
-							Score = score
-						});
-					}
-				}
-				
-				// Lägg till optimerade assignments
-				allAssignments.AddRange(optimizedAssignments);
 
 				var totalScore = allAssignments.Sum(a => a.Score);
 
@@ -133,11 +124,11 @@ namespace FMStatsApp.Services
 			}
 		}
 
-		private OptimizationResult CreateResultFromLockedPositions(List<FormationPosition> lockedPositions)
+		private OptimizationResult CreateResultFromExistingPositions(List<FormationPosition> positions)
 		{
 			var assignments = new List<PlayerAssignment>();
 			
-			foreach (var position in lockedPositions.Where(p => p.HasSelectedPlayer))
+			foreach (var position in positions.Where(p => p.HasSelectedPlayer))
 			{
 				var role = GetBestRoleForPosition(position.Position, position.SelectedRole, position.IsRoleLocked);
 				var score = CalculatePlayerRoleScore(position.SelectedPlayer!, role);

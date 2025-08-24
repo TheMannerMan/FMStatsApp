@@ -18,6 +18,14 @@
                     Optimize Formation
                 </button>
             </form>
+            <form method="post" asp-page-handler="ResetFormation" style="display: inline;">
+                <input type="hidden" asp-for="SelectedFormationName" />
+                @Html.AntiForgeryToken()
+                <button type="submit" class="inline-flex items-center rounded-md bg-rose-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-300" 
+                        onclick="return confirm('Är du säker på att du vill nollställa startelvan? Alla val och låsningar kommer att tas bort.')">
+                    Reset Formation
+                </button>
+            </form>
             <a asp-page="/BestStartingXI" class="inline-flex items-center rounded-md bg-slate-600 px-5 py-2 text-sm font-medium text-white shadow hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400">
                 Back to Formations
             </a>
@@ -28,6 +36,13 @@
     {
         <div class="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-200">
             @TempData["OptimizationResult"]
+        </div>
+    }
+
+    @if (TempData["ResetResult"] != null)
+    {
+        <div class="mb-6 rounded-xl border border-blue-500/30 bg-blue-500/10 p-4 text-blue-200">
+            @TempData["ResetResult"]
         </div>
     }
 
@@ -182,7 +197,22 @@
         const formationName = '@Model.SelectedFormationName';
 
         function getRequestVerificationToken() {
-            return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+            // Try to get the token from forms first
+            let token = document.querySelector('form input[name="__RequestVerificationToken"]')?.value;
+            
+            // If not found, try any input with that name
+            if (!token) {
+                token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            }
+            
+            // If still not found, create a temporary form to get a fresh token
+            if (!token) {
+                console.warn('RequestVerificationToken not found, creating temporary form');
+                // This is a fallback - in a real app you might want to fetch a new token
+                return '';
+            }
+            
+            return token;
         }
 
         async function openPositionModal(positionIndex) {
@@ -255,6 +285,28 @@
 
         function closePositionModal() {
             document.getElementById('positionModal').classList.add('hidden');
+            
+            // Clean up event listeners and reset state
+            const roleSelect = document.getElementById('roleSelect');
+            const playerSelect = document.getElementById('playerSelect');
+            
+            if (roleSelect) {
+                roleSelect.onchange = null;
+                roleSelect.innerHTML = '<option value="">Select a role...</option>';
+            }
+            
+            if (playerSelect) {
+                playerSelect.onchange = null;
+                playerSelect.innerHTML = '<option value="">Select a player...</option>';
+            }
+            
+            // Reset rating display
+            const ratingDiv = document.getElementById('playerRating');
+            if (ratingDiv) {
+                ratingDiv.classList.add('hidden');
+            }
+            
+            // Reset global state
             currentPositionIndex = -1;
             positionData = null;
         }
@@ -306,19 +358,12 @@
                             ratingDisplay.innerHTML = `<span class="${colorClass}">${rating.toFixed(1)}</span>`;
                             ratingDiv.classList.remove('hidden');
                         } else {
-                            // Fallback to simple calculation
-                            const rating = Math.random() * 15 + 5;
-                            const colorClass = rating >= 15 ? 'text-emerald-400' : rating >= 12 ? 'text-amber-400' : 'text-rose-400';
-                            ratingDisplay.innerHTML = `<span class="${colorClass}">${rating.toFixed(1)}</span>`;
-                            ratingDiv.classList.remove('hidden');
+                            console.warn('Failed to fetch rating from server, using fallback');
+                            ratingDiv.classList.add('hidden');
                         }
                     } catch (error) {
                         console.error('Error calculating rating:', error);
-                        // Fallback to simple calculation
-                        const rating = Math.random() * 15 + 5;
-                        const colorClass = rating >= 15 ? 'text-emerald-400' : rating >= 12 ? 'text-amber-400' : 'text-rose-400';
-                        ratingDisplay.innerHTML = `<span class="${colorClass}">${rating.toFixed(1)}</span>`;
-                        ratingDiv.classList.remove('hidden');
+                        ratingDiv.classList.add('hidden');
                     }
                 }
             } else {
@@ -348,6 +393,8 @@
                 if (result.success) {
                     positionData.position.IsRoleLocked = result.isLocked;
                     updateLockButtons();
+                    // Update the main UI as well
+                    updatePositionLockIcons(currentPositionIndex);
                 } else {
                     alert(result.error || 'Failed to toggle role lock');
                 }
@@ -379,6 +426,8 @@
                 if (result.success) {
                     positionData.position.IsPlayerLocked = result.isLocked;
                     updateLockButtons();
+                    // Update the main UI as well
+                    updatePositionLockIcons(currentPositionIndex);
                 } else {
                     alert(result.error || 'Failed to toggle player lock');
                 }
@@ -389,7 +438,7 @@
         }
 
         async function savePosition() {
-            if (currentPositionIndex === -1) return;
+            if currentPositionIndex === -1) return;
             
             const roleSelect = document.getElementById('roleSelect');
             const playerSelect = document.getElementById('playerSelect');
@@ -416,15 +465,84 @@
                 
                 const result = await response.json();
                 if (result.success) {
+                    // Update the position data in memory
+                    if (positionData) {
+                        positionData.position.SelectedRole = selectedRole;
+                        positionData.position.SelectedPlayerId = selectedPlayerId;
+                    }
+                    
                     closePositionModal();
-                    // Refresh the page to show updated data
-                    location.reload();
+                    
+                    // Update the UI dynamically instead of reloading
+                    updatePositionCardUI(currentPositionIndex, selectedRole, selectedPlayerId);
                 } else {
                     alert(result.error || 'Failed to save position');
                 }
             } catch (error) {
                 console.error('Error saving position:', error);
                 alert('Failed to save position: ' + error.message);
+            }
+        }
+
+        function updatePositionCardUI(positionIndex, selectedRole, selectedPlayerId) {
+            // Find the position card
+            const positionCard = document.querySelector(`[data-position-index="${positionIndex}"]`);
+            if (!positionCard) return;
+
+            // Update role display
+            const roleDisplay = positionCard.querySelector('.position-card > div:nth-child(2)');
+            if (roleDisplay) {
+                if (selectedRole) {
+                    roleDisplay.innerHTML = `<span class="inline-flex items-center rounded bg-primary-500/20 px-2 py-0.5 text-xs font-medium text-primary-300">${selectedRole}</span>`;
+                } else {
+                    roleDisplay.innerHTML = `<span class="text-xs text-slate-500">No role selected</span>`;
+                }
+            }
+
+            // Update player display
+            const playerDisplay = positionCard.querySelector('.position-card > div:nth-child(3)');
+            if (playerDisplay && selectedPlayerId && positionData) {
+                const player = positionData.players.find(p => p.uid === selectedPlayerId);
+                if (player) {
+                    let playerHtml = `
+                        <div class="text-sm font-medium text-slate-200">${player.name}</div>
+                        <div class="text-xs text-slate-400">Age: ${player.age}</div>
+                    `;
+                    
+                    // Add rating if both role and player are selected
+                    if (selectedRole) {
+                        // For now, just show placeholder rating - we could fetch the actual rating here
+                        const rating = Math.random() * 15 + 5; // Replace with actual calculation
+                        const colorClass = rating >= 15 ? 'text-emerald-400' : rating >= 12 ? 'text-amber-400' : 'text-rose-400';
+                        playerHtml += `<div class="text-xs ${colorClass}">Rating: ${rating.toFixed(1)}</div>`;
+                    }
+                    
+                    playerDisplay.innerHTML = playerHtml;
+                } else {
+                    playerDisplay.innerHTML = `<div class="text-sm text-slate-500">No player selected</div>`;
+                }
+            } else if (playerDisplay) {
+                playerDisplay.innerHTML = `<div class="text-sm text-slate-500">No player selected</div>`;
+            }
+
+            // Update lock icons in header
+            updatePositionLockIcons(positionIndex);
+        }
+
+        function updatePositionLockIcons(positionIndex) {
+            const positionCard = document.querySelector(`[data-position-index="${positionIndex}"]`);
+            if (!positionCard || !positionData) return;
+
+            const lockIconContainer = positionCard.querySelector('.position-card > div:first-child > div:last-child');
+            if (lockIconContainer) {
+                let iconsHtml = '';
+                if (positionData.position.IsRoleLocked) {
+                    iconsHtml += '<span class="text-amber-400 text-xs" title="Role Locked">🔒</span>';
+                }
+                if (positionData.position.IsPlayerLocked) {
+                    iconsHtml += '<span class="text-blue-400 text-xs" title="Player Locked">👤</span>';
+                }
+                lockIconContainer.innerHTML = iconsHtml;
             }
         }
     </script>

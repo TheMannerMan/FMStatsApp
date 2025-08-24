@@ -78,7 +78,11 @@ namespace FMStatsApp.Pages
 				if (SelectedFormation == null) return BadRequest("Invalid formation");
 
 				// Ladda sessionens senaste state (inkl lås)
-				LoadPositionsFromSession(SelectedFormation);
+				if (!LoadPositionsFromSession(SelectedFormation))
+				{
+					// Om vi inte kan ladda från session, skapa nya
+					FormationPositions = CreateFormationPositions(SelectedFormation);
+				}
 
 				AvailablePlayers = await _playerSession.GetPlayersAsync();
 				AllRoles = RoleCatalog.AllRoles;
@@ -86,58 +90,53 @@ namespace FMStatsApp.Pages
 				if (!AvailablePlayers.Any())
 				{
 					ModelState.AddModelError("", "Inga spelare tillgängliga för optimering.");
-					return await OnGetAsync(SelectedFormationName);
+					return Page();
 				}
 
-				// Mergar postade spelare/roller in i session-state (respekterar lås)
-				if (FormationPositions != null && FormationPositions.Count > 0)
-				{
-					foreach (var posted in FormationPositions)
-					{
-						var target = this.FormationPositions.FirstOrDefault(p => p.Index == posted.Index);
-						if (target == null) continue;
-
-						if (!target.IsRoleLocked && !string.IsNullOrEmpty(posted.SelectedRole))
-							target.SelectedRole = posted.SelectedRole;
-
-						if (!target.IsPlayerLocked && posted.SelectedPlayerId.HasValue)
-						{
-							target.SelectedPlayerId = posted.SelectedPlayerId;
-							target.SelectedPlayer = AvailablePlayers.FirstOrDefault(pl => pl.UID == posted.SelectedPlayerId.Value);
-						}
-					}
-				}
-
+				// Kör optimering med nuvarande FormationPositions (inkl låsningar)
 				var result = _optimizerService.OptimizeStartingXI(SelectedFormation, AvailablePlayers, FormationPositions);
 
 				if (!result.Success)
 				{
 					ModelState.AddModelError("", $"Optimering misslyckades: {result.ErrorMessage}");
-					return await OnGetAsync(SelectedFormationName);
+					return Page();
 				}
 
-				// Skriv tillbaka optimering (endast olåsta)
+				// Uppdatera FormationPositions med optimeringsresultatet
+				// Men respektera låsningar - skriv bara tillbaka till olåsta positioner
 				foreach (var assignment in result.Assignments)
 				{
 					var pos = FormationPositions.FirstOrDefault(p => p.Index == assignment.Position.Index);
-					if (pos != null && !pos.IsLocked)
+					if (pos != null)
 					{
-						pos.SelectedPlayerId = assignment.Player.UID;
-						pos.SelectedPlayer = assignment.Player;
-						pos.SelectedRole = assignment.Role.Name;
+						// Uppdatera roll endast om den inte är låst
+						if (!pos.IsRoleLocked)
+						{
+							pos.SelectedRole = assignment.Role.Name;
+						}
+						
+						// Uppdatera spelare endast om den inte är låst
+						if (!pos.IsPlayerLocked)
+						{
+							pos.SelectedPlayerId = assignment.Player.UID;
+							pos.SelectedPlayer = assignment.Player;
+						}
 					}
 				}
 
 				SavePositionsToSession();
 
-				TempData["OptimizationResult"] = $"Optimering klar! Genomsnittligt betyg: {result.AverageRating:F1}";
+				var lockedCount = FormationPositions.Count(p => p.IsLocked);
+				var lockedMessage = lockedCount > 0 ? $" ({lockedCount} låsta positioner respekterades)" : "";
+				TempData["OptimizationResult"] = $"Optimering klar! Genomsnittligt betyg: {result.AverageRating:F1}{lockedMessage}";
+				
 				return Page();
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error during optimization");
 				ModelState.AddModelError("", "Ett fel uppstod under optimeringen.");
-				return await OnGetAsync(SelectedFormationName);
+				return Page();
 			}
 		}
 
@@ -611,6 +610,28 @@ namespace FMStatsApp.Pages
 			{
 				_logger.LogError(ex, "Error calculating rating");
 				return BadRequest("Error calculating rating");
+			}
+		}
+
+		public async Task<IActionResult> OnPostResetFormationAsync()
+		{
+			try
+			{
+				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
+				if (SelectedFormation == null) return BadRequest("Invalid formation");
+
+				// Skapa nya formation positions (rensar alla val och lås)
+				FormationPositions = CreateFormationPositions(SelectedFormation);
+				SavePositionsToSession();
+
+				TempData["ResetResult"] = "Startelvan har nollställts!";
+				return Page();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error resetting formation");
+				ModelState.AddModelError("", "Ett fel uppstod när startelvan skulle nollställas.");
+				return Page();
 			}
 		}
 	}
