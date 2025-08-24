@@ -10,6 +10,7 @@ namespace FMStatsApp.Pages
 	public class DisplayPlayersModel : PageModel
 	{
 		private readonly IPlayerSessionService _playerSession;
+		private readonly ILogger<DisplayPlayersModel> _logger;
 
 		[BindProperty]
 		public PlayerFilter Filter { get; set; } = new();
@@ -21,6 +22,7 @@ namespace FMStatsApp.Pages
 		public List<RoleDefinition> AvailableRoles { get; set; } = new();
 		public List<string> AvailablePositions { get; set; } = new();
 		public List<string> AvailableNationalities { get; set; } = new();
+        public bool NoPlayersAvailable { get; set; }
 
 		public List<string> ForwardRoles { get; set; } = RoleCatalog.AllRoles
 			.Where(r => r.GeneralPosition == GeneralPosition.Forward)
@@ -42,9 +44,10 @@ namespace FMStatsApp.Pages
 			.Select(r => r.Name)
 			.ToList();
 
-		public DisplayPlayersModel(IPlayerSessionService playerSession)
+		public DisplayPlayersModel(IPlayerSessionService playerSession, ILogger<DisplayPlayersModel> logger)
 		{
 			_playerSession = playerSession;
+			_logger = logger;
 		}
 
 		public async Task<IActionResult> OnGetAsync()
@@ -150,8 +153,19 @@ namespace FMStatsApp.Pages
 
 		private async Task LoadDataAsync()
 		{
-			Players = await _playerSession.GetPlayersAsync();
-			await LoadDropdownDataAsync();
+			try
+			{
+				Players = await _playerSession.GetPlayersAsync();
+				_logger.LogInformation("Loaded {count} players from session", Players.Count);
+				NoPlayersAvailable = Players.Count == 0;
+				await LoadDropdownDataAsync();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error loading player data");
+				NoPlayersAvailable = true;
+				Players = new List<Player>();
+			}
 		}
 
 		private async Task LoadDropdownDataAsync()

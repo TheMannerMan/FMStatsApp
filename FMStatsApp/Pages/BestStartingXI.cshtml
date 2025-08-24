@@ -1,0 +1,64 @@
+@page
+@model FMStatsApp.Pages.BestStartingXIModel
+@{
+	ViewData["Title"] = "Bästa Startelvan";
+}
+<section class="mx-auto max-w-7xl px-4 py-10">
+	<h1 class="text-3xl font-bold tracking-tight mb-8">Välj en formation</h1>
+	
+	@if (Model.NoPlayersAvailable)
+	{
+		<div class="rounded-xl border border-sky-500/30 bg-sky-500/10 p-8 text-slate-200 mb-8">
+			<h5 class="text-lg font-semibold mb-2">Inga spelare hittades</h5>
+			<p class="text-sm text-slate-300 mb-4">För att skapa din bästa elva måste du först ladda upp spelare.</p>
+			<a asp-page="/UploadPlayers" class="inline-flex items-center rounded-md bg-primary-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300">Ladda upp spelare</a>
+		</div>
+	}
+	
+	<p class="text-slate-300 mb-8">Välj en taktik för att generera din bästa startelva baserat på importerade spelare. Fler formationer och grafik kan läggas till senare.</p>
+
+	<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+		@foreach (var f in Model.Formations)
+		{
+			<form method="post" asp-page="/BestStartingXI" asp-page-handler="Select" class="group relative overflow-hidden rounded-xl border border-slate-700/60 bg-slate-900/50 backdrop-blur hover:border-primary-400 transition shadow hover:shadow-primary-400/20 @(Model.NoPlayersAvailable ? "opacity-50 pointer-events-none" : "")">
+				<input type="hidden" name="formationName" value="@f.Name" />
+				<div class="p-5 flex flex-col h-full">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white group-hover:text-primary-300 transition">@f.Name</h2>
+						<span class="text-xs rounded bg-slate-800 px-2 py-1 text-slate-400">@f.Positions.Count spelare</span>
+					</div>
+					<div class="relative mb-4 aspect-[4/3] rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center ring-1 ring-inset ring-slate-700">
+						@if (!string.IsNullOrWhiteSpace(f.ImageUrl))
+						{
+							<img src="@f.ImageUrl" alt="@f.Name" class="object-contain max-h-full max-w-full opacity-90 group-hover:opacity-100 transition" />
+						}
+						else
+						{
+							<!-- Placeholder enkel representation av formation -->
+							<div class="grid grid-cols-5 gap-1 w-full h-full p-2">
+								@{ var index = 0; }
+								@for (int row = 0; row < 5; row++)
+								{
+									for (int col = 0; col < 5; col++)
+									{
+										if (index < f.Positions.Count)
+										{
+											<span class="flex items-center justify-center text-[10px] font-medium rounded-full bg-primary-500/10 text-primary-300 border border-primary-500/30 aspect-square">@f.Positions[index]</span>
+											index++;
+										}
+									}
+								}
+							</div>
+						}
+					</div>
+					<p class="text-sm text-slate-400 flex-1">@f.Description</p>
+					<div class="mt-4">
+						<button type="submit" class="w-full rounded-md bg-primary-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300" disabled="@Model.NoPlayersAvailable">
+							Välj formation
+						</button>
+					</div>
+				</div>
+			</form>
+		}
+	</div>
+</section>

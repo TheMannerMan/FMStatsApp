@@ -17,6 +17,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IPlayerScoringService, PlayerScoringService>();
 builder.Services.AddScoped<IHtmlParserService, HtmlParserService>();
 builder.Services.AddScoped<IPlayerSessionService, PlayerSessionService>();
+builder.Services.AddScoped<IStartingXIOptimizerService, StartingXIOptimizerService>();
 
 // Legacy services (keep for backward compatibility during transition)
 builder.Services.AddTransient<HtmlParser>();

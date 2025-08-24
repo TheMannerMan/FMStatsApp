@@ -9,27 +9,37 @@
     <link rel="stylesheet" href="~/FMStatsApp.styles.css" asp-append-version="true" />
     @RenderSection("Head", required: false)
 </head>
+@using FMStatsApp.Services
+@inject IPlayerSessionService PlayerSessionService
 <body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased">
     <header class="border-b border-white/10 bg-slate-900/70 backdrop-blur supports-[backdrop-filter]:bg-slate-900/40">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-            <a asp-page="/Index" class="text-lg font-semibold tracking-tight text-slate-100">FMStatsApp</a>
+        @{
+            var currentPage = (ViewContext.RouteData.Values["page"] as string) ?? string.Empty;
+            bool isPlayers = currentPage.Equals("/DisplayPlayers", StringComparison.OrdinalIgnoreCase);
+            bool isFormation = currentPage.Equals("/BestStartingXI", StringComparison.OrdinalIgnoreCase) || currentPage.Equals("/FormationSelecter", StringComparison.OrdinalIgnoreCase);
+        }
+        <nav class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4">
+            <div class="flex items-center gap-8">
+                <a asp-page="/Index" class="text-lg font-semibold tracking-tight text-slate-100">FMStatsApp</a>
+                <!-- Huvudnavigation visas alltid, ändrat från hidden sm:inline-flex till bara inline-flex -->
+                <div class="inline-flex rounded-lg bg-slate-800/50 ring-1 ring-inset ring-white/10 p-1 text-sm font-medium">
+                    <a asp-page="/DisplayPlayers" class="relative px-4 py-2 rounded-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/60 @(isPlayers ? "bg-primary-500 text-white shadow" : "text-slate-300 hover:text-white hover:bg-slate-700/60")">Players</a>
+                    <a asp-page="/BestStartingXI" class="relative px-4 py-2 rounded-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/60 @(isFormation ? "bg-primary-500 text-white shadow" : "text-slate-300 hover:text-white hover:bg-slate-700/60")">BestXI</a>
+                </div>
+            </div>
             <button class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-300 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-400" data-mobile-toggle>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
             </button>
             <ul class="hidden gap-6 text-sm font-medium text-slate-300 lg:flex" data-desktop-menu>
-                <li><a asp-page="/Index" class="hover:text-white transition">Home</a></li>
                 <li><a asp-page="/UploadPlayers" class="hover:text-white transition">Upload players</a></li>
-                <li><a asp-page="/DisplayPlayers" class="hover:text-white transition">Players</a></li>
-                <li><a asp-page="/FormationSelecter" class="hover:text-white transition">Formation Selector</a></li>
                 <li><a asp-page="/Privacy" class="hover:text-white transition">Privacy</a></li>
             </ul>
         </nav>
         <div class="hidden border-t border-white/10 px-4 pb-4 lg:hidden" data-mobile-menu>
             <ul class="space-y-2 text-sm font-medium text-slate-300">
-                <li><a asp-page="/Index" class="block rounded px-3 py-2 hover:bg-slate-800/80">Home</a></li>
+                <li><a asp-page="/DisplayPlayers" class="block rounded px-3 py-2 hover:bg-slate-800/80 @(isPlayers ? "bg-primary-500/30 text-primary-200" : null)">Players</a></li>
+                <li><a asp-page="/BestStartingXI" class="block rounded px-3 py-2 hover:bg-slate-800/80 @(isFormation ? "bg-primary-500/30 text-primary-200" : null)">BestXI</a></li>
                 <li><a asp-page="/UploadPlayers" class="block rounded px-3 py-2 hover:bg-slate-800/80">Upload players</a></li>
-                <li><a asp-page="/DisplayPlayers" class="block rounded px-3 py-2 hover:bg-slate-800/80">Players</a></li>
-                <li><a asp-page="/FormationSelecter" class="block rounded px-3 py-2 hover:bg-slate-800/80">Formation Selector</a></li>
                 <li><a asp-page="/Privacy" class="block rounded px-3 py-2 hover:bg-slate-800/80">Privacy</a></li>
             </ul>
         </div>
