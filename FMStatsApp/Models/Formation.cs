@@ -14,10 +14,15 @@
 
 	public class Formation
 	{
-		public string Name { get; set; }
-		public List<Position> Positions { get; set; }
+		public string Name { get; set; } = string.Empty;
+		public List<Position> Positions { get; set; } = new();
 		public string? Description { get; set; } // Kort beskrivning
 		public string? ImageUrl { get; set; } // Plats för taktik-bild
+
+		// Parameterless constructor for model binding
+		public Formation()
+		{
+		}
 
 		public Formation(string name, List<Position> positions, string? description = null, string? imageUrl = null)
 		{

@@ -12,6 +12,8 @@ namespace FMStatsApp.Pages
 		private readonly IStartingXIOptimizerService _optimizerService;
 		private readonly ILogger<RoleSelecterModel> _logger;
 
+		private const string FormationSessionKey = "FormationPositions"; // session key
+
 		[BindProperty]
 		public string SelectedFormationName { get; set; } = string.Empty;
 
@@ -51,8 +53,13 @@ namespace FMStatsApp.Pages
 				AvailablePlayers = await _playerSession.GetPlayersAsync();
 				AllRoles = RoleCatalog.AllRoles;
 
-				// Skapa FormationPosition objekt för varje position i formationen
-				FormationPositions = CreateFormationPositions(SelectedFormation);
+				// Försök ladda tidigare sparade formation-positioner från session
+				if (!LoadPositionsFromSession(SelectedFormation))
+				{
+					// Skapa nya om inga finns
+					FormationPositions = CreateFormationPositions(SelectedFormation);
+					SavePositionsToSession();
+				}
 
 				return Page();
 			}
@@ -68,44 +75,62 @@ namespace FMStatsApp.Pages
 			try
 			{
 				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
-				if (SelectedFormation == null)
-				{
-					return BadRequest("Invalid formation");
-				}
+				if (SelectedFormation == null) return BadRequest("Invalid formation");
+
+				// Ladda sessionens senaste state (inkl lås)
+				LoadPositionsFromSession(SelectedFormation);
 
 				AvailablePlayers = await _playerSession.GetPlayersAsync();
 				AllRoles = RoleCatalog.AllRoles;
-				
+
 				if (!AvailablePlayers.Any())
 				{
 					ModelState.AddModelError("", "Inga spelare tillgängliga för optimering.");
 					return await OnGetAsync(SelectedFormationName);
 				}
 
-				// Kör optimeringen
+				// Mergar postade spelare/roller in i session-state (respekterar lås)
+				if (FormationPositions != null && FormationPositions.Count > 0)
+				{
+					foreach (var posted in FormationPositions)
+					{
+						var target = this.FormationPositions.FirstOrDefault(p => p.Index == posted.Index);
+						if (target == null) continue;
+
+						if (!target.IsRoleLocked && !string.IsNullOrEmpty(posted.SelectedRole))
+							target.SelectedRole = posted.SelectedRole;
+
+						if (!target.IsPlayerLocked && posted.SelectedPlayerId.HasValue)
+						{
+							target.SelectedPlayerId = posted.SelectedPlayerId;
+							target.SelectedPlayer = AvailablePlayers.FirstOrDefault(pl => pl.UID == posted.SelectedPlayerId.Value);
+						}
+					}
+				}
+
 				var result = _optimizerService.OptimizeStartingXI(SelectedFormation, AvailablePlayers, FormationPositions);
-				
+
 				if (!result.Success)
 				{
 					ModelState.AddModelError("", $"Optimering misslyckades: {result.ErrorMessage}");
 					return await OnGetAsync(SelectedFormationName);
 				}
 
-				// Uppdatera FormationPositions med optimerade resultat
+				// Skriv tillbaka optimering (endast olåsta)
 				foreach (var assignment in result.Assignments)
 				{
-					var position = FormationPositions.FirstOrDefault(p => p.Index == assignment.Position.Index);
-					if (position != null)
+					var pos = FormationPositions.FirstOrDefault(p => p.Index == assignment.Position.Index);
+					if (pos != null && !pos.IsLocked)
 					{
-						position.SelectedPlayerId = assignment.Player.UID;
-						position.SelectedPlayer = assignment.Player;
-						position.SelectedRole = assignment.Role.Name;
+						pos.SelectedPlayerId = assignment.Player.UID;
+						pos.SelectedPlayer = assignment.Player;
+						pos.SelectedRole = assignment.Role.Name;
 					}
 				}
 
-				// Lägg till meddelande om resultatet
+				SavePositionsToSession();
+
 				TempData["OptimizationResult"] = $"Optimering klar! Genomsnittligt betyg: {result.AverageRating:F1}";
-				
 				return Page();
 			}
 			catch (Exception ex)
@@ -120,6 +145,13 @@ namespace FMStatsApp.Pages
 		{
 			try
 			{
+				if (!string.IsNullOrWhiteSpace(request.FormationName))
+				{
+					SelectedFormationName = request.FormationName!;
+				}
+				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
+				LoadPositionsFromSession(SelectedFormation); // se till att listan finns
+
 				if (request.PositionIndex < 0 || request.PositionIndex >= FormationPositions.Count)
 				{
 					return BadRequest("Invalid position index");
@@ -128,17 +160,53 @@ namespace FMStatsApp.Pages
 				AvailablePlayers = await _playerSession.GetPlayersAsync();
 				
 				var position = FormationPositions[request.PositionIndex];
-				position.SelectedRole = request.SelectedRole;
-				position.SelectedPlayerId = request.SelectedPlayerId;
-
+				
+				// Kontrollera om spelare redan är vald på annan position
 				if (request.SelectedPlayerId.HasValue)
 				{
-					position.SelectedPlayer = AvailablePlayers.FirstOrDefault(p => p.UID == request.SelectedPlayerId.Value);
+					var existingPosition = FormationPositions.FirstOrDefault(p => 
+						p.Index != request.PositionIndex && 
+						p.SelectedPlayerId == request.SelectedPlayerId.Value);
+					
+					if (existingPosition != null)
+					{
+						// Släpp spelare från tidigare position om den inte är låst
+						if (!existingPosition.IsPlayerLocked)
+						{
+							existingPosition.SelectedPlayerId = null;
+							existingPosition.SelectedPlayer = null;
+						}
+						else
+						{
+							return new JsonResult(new { 
+								success = false, 
+								error = "Spelare är låst på annan position" 
+							});
+						}
+					}
 				}
-				else
+
+				// Uppdatera positionen endast om den inte är låst
+				if (!position.IsRoleLocked || string.IsNullOrEmpty(position.SelectedRole))
 				{
-					position.SelectedPlayer = null;
+					position.SelectedRole = request.SelectedRole;
 				}
+
+				if (!position.IsPlayerLocked)
+				{
+					position.SelectedPlayerId = request.SelectedPlayerId;
+					
+					if (request.SelectedPlayerId.HasValue)
+					{
+						position.SelectedPlayer = AvailablePlayers.FirstOrDefault(p => p.UID == request.SelectedPlayerId.Value);
+					}
+					else
+					{
+						position.SelectedPlayer = null;
+					}
+				}
+
+				SavePositionsToSession();
 
 				return new JsonResult(new { success = true });
 			}
@@ -149,16 +217,103 @@ namespace FMStatsApp.Pages
 			}
 		}
 
-		public async Task<IActionResult> OnGetPositionDataAsync(int positionIndex)
+		public async Task<IActionResult> OnPostToggleRoleLockAsync([FromBody] ToggleLockRequest request)
 		{
 			try
 			{
+				if (!string.IsNullOrWhiteSpace(request.FormationName))
+				{
+					SelectedFormationName = request.FormationName!;
+				}
+				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
+				LoadPositionsFromSession(SelectedFormation);
+
+				if (request.PositionIndex < 0 || request.PositionIndex >= FormationPositions.Count)
+				{
+					return BadRequest("Invalid position index");
+				}
+
+				var position = FormationPositions[request.PositionIndex];
+				position.IsRoleLocked = !position.IsRoleLocked;
+
+				SavePositionsToSession();
+
+				return new JsonResult(new { 
+					success = true, 
+					isLocked = position.IsRoleLocked 
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error toggling role lock");
+				return new JsonResult(new { success = false, error = ex.Message });
+			}
+		}
+
+		public async Task<IActionResult> OnPostTogglePlayerLockAsync([FromBody] ToggleLockRequest request)
+		{
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(request.FormationName))
+				{
+					SelectedFormationName = request.FormationName!;
+				}
+				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
+				LoadPositionsFromSession(SelectedFormation);
+
+				if (request.PositionIndex < 0 || request.PositionIndex >= FormationPositions.Count)
+				{
+					return BadRequest("Invalid position index");
+				}
+
+				var position = FormationPositions[request.PositionIndex];
+				position.IsPlayerLocked = !position.IsPlayerLocked;
+
+				SavePositionsToSession();
+
+				return new JsonResult(new { 
+					success = true, 
+					isLocked = position.IsPlayerLocked 
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error toggling player lock");
+				return new JsonResult(new { success = false, error = ex.Message });
+			}
+		}
+
+		public async Task<IActionResult> OnGetPositionDataAsync(int positionIndex, string? formationName = null)
+		{
+			try
+			{
+				// Make sure we have the formation set
+				if (string.IsNullOrWhiteSpace(SelectedFormationName))
+				{
+					SelectedFormationName = formationName ?? Request.Query["formationName"].ToString();
+				}
+				
+				if (string.IsNullOrWhiteSpace(SelectedFormationName))
+				{
+					return BadRequest("Formation name is required");
+				}
+				
+				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
+				if (SelectedFormation == null)
+				{
+					return BadRequest("Invalid formation");
+				}
+
+				LoadPositionsFromSession(SelectedFormation);
+
 				if (positionIndex < 0 || positionIndex >= FormationPositions.Count)
 				{
 					return BadRequest("Invalid position index");
 				}
 
 				AvailablePlayers = await _playerSession.GetPlayersAsync();
+				AllRoles = RoleCatalog.AllRoles;
+				
 				var position = FormationPositions[positionIndex];
 				
 				var rolesForPosition = GetRolesForPosition(position.Position);
@@ -171,10 +326,12 @@ namespace FMStatsApp.Pages
 						Index = position.Index,
 						Position = position.Position.ToString(),
 						SelectedRole = position.SelectedRole,
-						SelectedPlayerId = position.SelectedPlayerId
+						SelectedPlayerId = position.SelectedPlayerId,
+						IsRoleLocked = position.IsRoleLocked,
+						IsPlayerLocked = position.IsPlayerLocked
 					},
-					roles = rolesForPosition.Select(r => new { r.Name, r.ShortName }).ToList(),
-					players = playersForPosition.Select(p => new { p.UID, p.Name, p.Age, p.Club, p.Position }).ToList()
+					roles = rolesForPosition.Select(r => new { name = r.Name, shortName = r.ShortName }).ToList(),
+					players = playersForPosition.Select(p => new { uid = p.UID, name = p.Name, age = p.Age, club = p.Club, position = p.Position }).ToList()
 				});
 			}
 			catch (Exception ex)
@@ -191,6 +348,16 @@ namespace FMStatsApp.Pages
 		{
 			// Filtrera spelare som kan spela på positionen (enkel filtrering baserat på huvudposition)
 			return AvailablePlayers.Where(p => CanPlayerPlayPosition(p, position)).ToList();
+		}
+
+		public double CalculatePlayerRoleRating(Player player, string roleName)
+		{
+			if (string.IsNullOrEmpty(roleName)) return 0;
+			
+			var role = AllRoles.FirstOrDefault(r => r.Name == roleName);
+			if (role == null) return 0;
+			
+			return _optimizerService.CalculatePlayerRoleScore(player, role);
 		}
 
 		private bool CanPlayerPlayPosition(Player player, Position position)
@@ -322,6 +489,130 @@ namespace FMStatsApp.Pages
 					break;
 			}
 		}
+
+		private record FormationPositionDto(int Index, Position Position, string? SelectedRole, long? SelectedPlayerId, bool IsRoleLocked, bool IsPlayerLocked, int GridRow, int GridColumn);
+
+		private void SavePositionsToSession()
+		{
+			try
+			{
+				var dto = FormationPositions.Select(p => new FormationPositionDto(p.Index, p.Position, p.SelectedRole, p.SelectedPlayerId, p.IsRoleLocked, p.IsPlayerLocked, p.GridRow, p.GridColumn)).ToList();
+				HttpContext.Session.SetString(FormationSessionKey, JsonSerializer.Serialize(new
+				{
+					formation = SelectedFormationName,
+					positions = dto
+				}));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to save formation positions to session");
+			}
+		}
+
+		private bool LoadPositionsFromSession(Formation? currentFormation)
+		{
+			try
+			{
+				var raw = HttpContext.Session.GetString(FormationSessionKey);
+				if (string.IsNullOrWhiteSpace(raw)) return false;
+				
+				var wrapper = JsonSerializer.Deserialize<JsonElement>(raw);
+				if (!wrapper.TryGetProperty("formation", out var formNameEl)) return false;
+				
+				var storedFormationName = formNameEl.GetString();
+				
+				// Om vi saknar SelectedFormationName (t ex vid AJAX) sätt det från sessionen
+				if (string.IsNullOrWhiteSpace(SelectedFormationName) && !string.IsNullOrWhiteSpace(storedFormationName))
+					SelectedFormationName = storedFormationName!;
+				
+				// Fel formation => ignorera
+				if (!string.Equals(storedFormationName, SelectedFormationName, StringComparison.OrdinalIgnoreCase)) return false;
+				
+				if (!wrapper.TryGetProperty("positions", out var positionsEl)) return false;
+				
+				var list = JsonSerializer.Deserialize<List<FormationPositionDto>>(positionsEl.GetRawText());
+				if (list == null || currentFormation == null) return false;
+
+				// Om antal mismatch med aktuell formation - skapa nya
+				if (list.Count != currentFormation.Positions.Count) return false;
+
+				// Ensure we have players and roles loaded
+				if (!AvailablePlayers.Any())
+				{
+					AvailablePlayers = _playerSession.GetPlayersAsync().GetAwaiter().GetResult();
+				}
+				
+				if (!AllRoles.Any())
+				{
+					AllRoles = RoleCatalog.AllRoles;
+				}
+
+				FormationPositions = list.Select(d => new FormationPosition(d.Index, d.Position)
+				{
+					SelectedRole = d.SelectedRole,
+					SelectedPlayerId = d.SelectedPlayerId,
+					SelectedPlayer = d.SelectedPlayerId.HasValue ? AvailablePlayers.FirstOrDefault(p => p.UID == d.SelectedPlayerId.Value) : null,
+					IsRoleLocked = d.IsRoleLocked,
+					IsPlayerLocked = d.IsPlayerLocked,
+					GridRow = d.GridRow,
+					GridColumn = d.GridColumn
+				}).ToList();
+				
+				return true;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogWarning(ex, "Failed to load formation positions from session");
+				return false;
+			}
+		}
+
+		public async Task<IActionResult> OnGetCalculateRatingAsync(long playerId, string roleName, string? formationName = null)
+		{
+			try
+			{
+				// Make sure we have the formation set
+				if (string.IsNullOrWhiteSpace(SelectedFormationName))
+				{
+					SelectedFormationName = formationName ?? Request.Query["formationName"].ToString();
+				}
+				
+				if (string.IsNullOrWhiteSpace(SelectedFormationName))
+				{
+					return BadRequest("Formation name is required");
+				}
+				
+				SelectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == SelectedFormationName);
+				if (SelectedFormation == null)
+				{
+					return BadRequest("Invalid formation");
+				}
+
+				AvailablePlayers = await _playerSession.GetPlayersAsync();
+				AllRoles = RoleCatalog.AllRoles;
+				
+				var player = AvailablePlayers.FirstOrDefault(p => p.UID == playerId);
+				if (player == null)
+				{
+					return BadRequest("Player not found");
+				}
+				
+				var role = AllRoles.FirstOrDefault(r => r.Name == roleName);
+				if (role == null)
+				{
+					return BadRequest("Role not found");
+				}
+				
+				var rating = _optimizerService.CalculatePlayerRoleScore(player, role);
+				
+				return new JsonResult(new { rating = rating });
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error calculating rating");
+				return BadRequest("Error calculating rating");
+			}
+		}
 	}
 
 	public class UpdatePositionRequest
@@ -329,5 +620,12 @@ namespace FMStatsApp.Pages
 		public int PositionIndex { get; set; }
 		public string? SelectedRole { get; set; }
 		public long? SelectedPlayerId { get; set; }
+		public string? FormationName { get; set; }
+	}
+
+	public class ToggleLockRequest
+	{
+		public int PositionIndex { get; set; }
+		public string? FormationName { get; set; }
 	}
 }

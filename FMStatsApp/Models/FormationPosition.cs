@@ -10,6 +10,10 @@ namespace FMStatsApp.Models
 		public long? SelectedPlayerId { get; set; }
 		public Player? SelectedPlayer { get; set; }
 		
+		// Låsningsfunktionalitet
+		public bool IsRoleLocked { get; set; }
+		public bool IsPlayerLocked { get; set; }
+		
 		// För visual layout
 		public int GridRow { get; set; }
 		public int GridColumn { get; set; }
@@ -22,6 +26,11 @@ namespace FMStatsApp.Models
 		}
 		
 		public FormationPosition() { } // Parameterless constructor för model binding
+		
+		// Helper properties
+		public bool IsLocked => IsRoleLocked || IsPlayerLocked;
+		public bool HasSelectedPlayer => SelectedPlayerId.HasValue && SelectedPlayer != null;
+		public bool HasSelectedRole => !string.IsNullOrEmpty(SelectedRole);
 		
 		private void CalculateGridPosition()
 		{

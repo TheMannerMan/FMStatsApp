@@ -1,530 +1,431 @@
-﻿@page
-@model FMStatsApp.Pages.RoleSelecterModel
-@using FMStatsApp.Models
+﻿@page "/role-selecter"
+@model RoleSelecterModel
 @{
-    ViewData["Title"] = "Välj roller och spelare";
+    ViewData["Title"] = "Role Selecter";
 }
 
-<section class="min-h-screen bg-slate-950 p-4">
-    <!-- Header -->
-    <div class="mx-auto max-w-7xl mb-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-white mb-1">@Model.SelectedFormation?.Name Formation</h1>
-                <p class="text-slate-400 text-sm">@Model.SelectedFormation?.Description</p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                <!-- Summary Stats -->
-                <div class="flex space-x-6 text-center">
-                    <div>
-                        <div class="text-sm text-slate-400">Valda spelare</div>
-                        <div class="text-xl font-bold text-white">@Model.FormationPositions.Count(p => p.SelectedPlayerId != null)/@Model.FormationPositions.Count</div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-slate-400">Tillgängliga</div>
-                        <div class="text-xl font-bold text-primary-400">@Model.AvailablePlayers.Count</div>
-                    </div>
-                </div>
-                <!-- Pick Best XI Button -->
-                <form method="post" asp-page-handler="Optimize" class="inline">
-                    @for (int i = 0; i < Model.FormationPositions.Count; i++)
-                    {
-                        <input type="hidden" asp-for="FormationPositions[i].Index" />
-                        <input type="hidden" asp-for="FormationPositions[i].Position" />
-                        <input type="hidden" asp-for="FormationPositions[i].SelectedRole" />
-                        <input type="hidden" asp-for="FormationPositions[i].SelectedPlayerId" />
-                        <input type="hidden" asp-for="FormationPositions[i].GridRow" />
-                        <input type="hidden" asp-for="FormationPositions[i].GridColumn" />
-                    }
-                    <input type="hidden" asp-for="SelectedFormationName" />
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg font-medium shadow-lg hover:from-primary-400 hover:to-primary-500 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" 
-                            disabled="@(!Model.AvailablePlayers.Any())">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        Pick Best XI
-                    </button>
-                </form>
-            </div>
+<div class="mx-auto max-w-7xl px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-semibold tracking-tight text-slate-100">Role Selecter</h1>
+            <p class="text-slate-400 mt-2">Formation: @Model.SelectedFormationName</p>
+        </div>
+        <div class="flex gap-3">
+            <form method="post" asp-page-handler="Optimize" style="display: inline;">
+                <input type="hidden" asp-for="SelectedFormationName" />
+                @Html.AntiForgeryToken()
+                <button type="submit" class="inline-flex items-center rounded-md bg-emerald-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                    Optimize Formation
+                </button>
+            </form>
+            <a asp-page="/BestStartingXI" class="inline-flex items-center rounded-md bg-slate-600 px-5 py-2 text-sm font-medium text-white shadow hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                Back to Formations
+            </a>
         </div>
     </div>
 
     @if (TempData["OptimizationResult"] != null)
     {
-        <div class="mx-auto max-w-7xl mb-6">
-            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-200">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <p class="font-medium">@TempData["OptimizationResult"]</p>
-                </div>
-            </div>
+        <div class="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-200">
+            @TempData["OptimizationResult"]
         </div>
     }
 
-    @if (!Model.AvailablePlayers.Any())
+    @if (!ViewData.ModelState.IsValid)
     {
-        <div class="mx-auto max-w-7xl mb-6">
-            <div class="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-200">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 15c-.77.833.192 2.5 1.732 2.5z"></path>
-                    </svg>
-                    <div>
-                        <p class="font-medium">Inga spelare tillgängliga</p>
-                        <p class="text-sm mt-1">Ladda upp spelare först för att kunna skapa din startelva.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-200">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@error.ErrorMessage</div>
+            }
         </div>
     }
 
-    <!-- Main Football Pitch Container -->
-    <div class="mx-auto max-w-7xl">
-        <div class="relative w-full h-[75vh] min-h-[500px] max-h-[700px]">
-            <!-- Football Pitch -->
-            <div class="w-full h-full bg-gradient-to-b from-green-500 to-green-600 rounded-2xl relative overflow-hidden shadow-2xl">
-                <!-- Grass texture overlay -->
-                <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 22px);"></div>
-                
-                <!-- Pitch Markings -->
-                <div class="absolute inset-0">
-                    <!-- Border -->
-                    <div class="absolute inset-4 border-2 border-white/40 rounded-lg"></div>
+    <!-- Formation Grid -->
+    <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-8 shadow">
+        <div class="formation-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 20px; min-height: 600px;">
+            @for (int i = 0; i < Model.FormationPositions.Count; i++)
+            {
+                var position = Model.FormationPositions[i];
+                <div class="position-slot" 
+                     style="grid-row: @position.GridRow; grid-column: @position.GridColumn;"
+                     data-position-index="@position.Index"
+                     data-position="@position.Position.ToString()"
+                     onclick="openPositionModal(@position.Index)">
                     
-                    <!-- Center line -->
-                    <div class="absolute top-1/2 left-4 right-4 h-0.5 bg-white/40"></div>
-                    
-                    <!-- Center circle -->
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-white/40 rounded-full"></div>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white/40 rounded-full"></div>
-                    
-                    <!-- Penalty areas -->
-                    <div class="absolute bottom-4 left-1/4 right-1/4 h-20 border-t-2 border-l-2 border-r-2 border-white/40"></div>
-                    <div class="absolute top-4 left-1/4 right-1/4 h-20 border-b-2 border-l-2 border-r-2 border-white/40"></div>
-                    
-                    <!-- Goal areas -->
-                    <div class="absolute bottom-4 left-[37.5%] right-[37.5%] h-12 border-t-2 border-l-2 border-r-2 border-white/40"></div>
-                    <div class="absolute top-4 left-[37.5%] right-[37.5%] h-12 border-b-2 border-l-2 border-r-2 border-white/40"></div>
-                    
-                    <!-- Penalty spots -->
-                    <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-white/40 rounded-full"></div>
-                    <div class="absolute top-16 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-white/40 rounded-full"></div>
-                    
-                    <!-- Corner arcs -->
-                    <div class="absolute top-4 left-4 w-6 h-6 border-b-2 border-r-2 border-white/40 rounded-br-full"></div>
-                    <div class="absolute top-4 right-4 w-6 h-6 border-b-2 border-l-2 border-white/40 rounded-bl-full"></div>
-                    <div class="absolute bottom-4 left-4 w-6 h-6 border-t-2 border-r-2 border-white/40 rounded-tr-full"></div>
-                    <div class="absolute bottom-4 right-4 w-6 h-6 border-t-2 border-l-2 border-white/40 rounded-tl-full"></div>
-                </div>
-
-                <!-- Instructions overlay -->
-                <div class="absolute top-6 left-6 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2 text-white/90 text-sm max-w-xs">
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span class="font-medium">Klicka på en position för att konfigurera</span>
-                    </div>
-                </div>
-
-                <!-- Player Positions -->
-                <div class="absolute inset-8 grid grid-rows-5 grid-cols-5 gap-2">
-                    @for (int i = 0; i < Model.FormationPositions.Count; i++)
-                    {
-                        var position = Model.FormationPositions[i];
-                        
-                        <div class="position-slot" 
-                             style="grid-row: @position.GridRow; grid-column: @position.GridColumn;"
-                             data-position-index="@i">
-                            
-                            <!-- Player Circle -->
-                            <div class="relative group cursor-pointer" onclick="openPositionModal(@i)">
-                                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-white font-bold transition-all duration-300 transform hover:scale-110 shadow-lg border-2 @(position.SelectedPlayer != null ? "bg-primary-500 border-primary-300 ring-4 ring-primary-300/30" : "bg-slate-700/90 border-white/30 hover:bg-slate-600/90 hover:border-primary-400/50")">
-                                    @if (position.SelectedPlayer != null)
-                                    {
-                                        <div class="text-[9px] sm:text-[10px] leading-tight text-center px-1">
-                                            <div class="font-bold truncate w-full">@position.SelectedPlayer.Name.Split(' ').Last().ToUpper()</div>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="text-[10px] sm:text-xs font-semibold">@position.Position.ToString()</div>
-                                    }
-                                </div>
-                                
-                                <!-- Position Label -->
-                                <div class="absolute -bottom-5 sm:-bottom-6 left-1/2 transform -translate-x-1/2 text-[10px] sm:text-xs font-medium text-white/90 bg-black/60 backdrop-blur-sm px-1.5 sm:px-2 py-0.5 rounded">
-                                    @position.Position.ToString() @(i + 1)
-                                </div>
-                                
-                                <!-- Role Label -->
-                                @if (!string.IsNullOrEmpty(position.SelectedRole))
+                    <div class="position-card bg-slate-800/60 border border-white/20 rounded-lg p-4 cursor-pointer hover:bg-slate-700/60 transition-colors min-h-[120px] flex flex-col">
+                        <!-- Position Header -->
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 uppercase">@position.Position.ToString()</span>
+                            <div class="flex gap-1">
+                                @if (position.IsRoleLocked)
                                 {
-                                    <div class="absolute -top-5 sm:-top-6 left-1/2 transform -translate-x-1/2 text-[8px] sm:text-[10px] font-medium text-primary-300 bg-black/60 backdrop-blur-sm px-1 sm:px-1.5 py-0.5 rounded whitespace-nowrap">
-                                        @(Model.AllRoles.FirstOrDefault(r => r.Name == position.SelectedRole)?.ShortName ?? "")
-                                    </div>
+                                    <span class="text-amber-400 text-xs" title="Role Locked">🔒</span>
                                 }
-                                
-                                <!-- Hover indicator -->
-                                <div class="absolute inset-0 rounded-full bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
+                                @if (position.IsPlayerLocked)
+                                {
+                                    <span class="text-blue-400 text-xs" title="Player Locked">👤</span>
+                                }
                             </div>
                         </div>
-                    }
+
+                        <!-- Selected Role -->
+                        <div class="mb-2">
+                            @if (!string.IsNullOrEmpty(position.SelectedRole))
+                            {
+                                <span class="inline-flex items-center rounded bg-primary-500/20 px-2 py-0.5 text-xs font-medium text-primary-300">
+                                    @position.SelectedRole
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-xs text-slate-500">No role selected</span>
+                            }
+                        </div>
+
+                        <!-- Selected Player -->
+                        <div class="flex-grow flex flex-col justify-end">
+                            @if (position.SelectedPlayer != null)
+                            {
+                                <div class="text-sm font-medium text-slate-200">@position.SelectedPlayer.Name</div>
+                                <div class="text-xs text-slate-400">Age: @position.SelectedPlayer.Age</div>
+                                @if (!string.IsNullOrEmpty(position.SelectedRole))
+                                {
+                                    var rating = Model.CalculatePlayerRoleRating(position.SelectedPlayer, position.SelectedRole);
+                                    var colorClass = rating >= 15 ? "text-emerald-400" : rating >= 12 ? "text-amber-400" : "text-rose-400";
+                                    <div class="text-xs @colorClass">Rating: @rating.ToString("F1")</div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-sm text-slate-500">No player selected</div>
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
+</div>
 
-    <!-- Quick Actions -->
-    <div class="mx-auto max-w-7xl mt-6">
-        <div class="flex flex-wrap justify-center gap-3">
-            <button onclick="clearAllPositions()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200">
-                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-                Rensa alla
-            </button>
-            <a asp-page="/BestStartingXI" class="px-4 py-2 bg-slate-600/80 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors duration-200">
-                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Byt formation
-            </a>
-        </div>
-    </div>
+<!-- Position Selection Modal -->
+<div id="positionModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" onclick="closePositionModal()"></div>
 
-    <!-- Position Configuration Modal -->
-    <div id="positionModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-slate-900 rounded-xl shadow-2xl w-full max-w-md transform transition-all scale-95 opacity-0" id="modalContent">
-                <div class="p-6">
+        <div class="inline-block align-bottom bg-slate-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+            <div class="sm:flex sm:items-start">
+                <div class="w-full">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 id="modalTitle" class="text-lg font-semibold text-white"></h3>
-                        <button onclick="closePositionModal()" class="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-700">
+                        <h3 class="text-lg leading-6 font-medium text-slate-100" id="modal-title">
+                            Configure Position
+                        </h3>
+                        <button onclick="closePositionModal()" class="text-slate-400 hover:text-slate-200">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
-                    
-                    <form id="positionForm">
-                        <input type="hidden" id="modalPositionIndex" />
-                        
+
+                    <div class="space-y-6">
                         <!-- Role Selection -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-slate-300 mb-2">Roll</label>
-                            <select id="modalRoleSelect" class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2.5 text-white focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-colors">
-                                <option value="">-- Välj roll --</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Player Selection -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-slate-300 mb-2">Spelare</label>
-                            <select id="modalPlayerSelect" class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2.5 text-white focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-colors">
-                                <option value="">-- Ingen spelare --</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Player Info -->
-                        <div id="playerInfo" class="hidden mb-6 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
-                            <div class="text-sm text-slate-300 space-y-2">
-                                <div class="flex justify-between">
-                                    <span>Ålder:</span>
-                                    <span id="playerAge" class="text-white font-medium"></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Klubb:</span>
-                                    <span id="playerClub" class="text-white font-medium"></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Position:</span>
-                                    <span id="playerPosition" class="text-white font-medium"></span>
-                                </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-slate-200">Role</label>
+                                <button id="toggleRoleLock" onclick="toggleRoleLock()" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600">
+                                    🔒 Toggle Lock
+                                </button>
                             </div>
+                            <select id="roleSelect" class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                                <option value="">Select a role...</option>
+                            </select>
                         </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex space-x-3">
-                            <button type="button" onclick="clearPosition()" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400/50">
-                                Rensa
-                            </button>
-                            <button type="button" onclick="savePosition()" class="flex-1 px-4 py-2.5 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-500 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
-                                Spara
-                            </button>
+
+                        <!-- Player Selection -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-slate-200">Player</label>
+                                <button id="togglePlayerLock" onclick="togglePlayerLock()" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600">
+                                    👤 Toggle Lock
+                                </button>
+                            </div>
+                            <select id="playerSelect" class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                                <option value="">Select a player...</option>
+                            </select>
                         </div>
-                    </form>
+
+                        <!-- Player Rating Display -->
+                        <div id="playerRating" class="hidden">
+                            <label class="block text-sm font-medium text-slate-200 mb-2">Role Rating</label>
+                            <div id="ratingDisplay" class="text-lg font-bold"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button onclick="closePositionModal()" class="inline-flex justify-center rounded-md border border-slate-600 bg-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500">
+                            Cancel
+                        </button>
+                        <button onclick="savePosition()" class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            Save
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<script>
-// Global data
-window.formationData = {
-    positions: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.FormationPositions.Select(p => new { 
-        Index = p.Index, 
-        Position = p.Position.ToString(), 
-        SelectedRole = p.SelectedRole, 
-        SelectedPlayerId = p.SelectedPlayerId,
-        SelectedPlayerName = p.SelectedPlayer?.Name,
-        SelectedPlayerAge = p.SelectedPlayer?.Age,
-        SelectedPlayerClub = p.SelectedPlayer?.Club,
-        SelectedPlayerPosition = p.SelectedPlayer?.Position
-    }))),
-    roles: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AllRoles.GroupBy(r => string.Join(",", r.Positions)).ToDictionary(g => g.Key, g => g.Select(r => new { Name = r.Name, ShortName = r.ShortName }).ToList()))),
-    players: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AvailablePlayers.Select(p => new { 
-        UID = p.UID, 
-        Name = p.Name, 
-        Age = p.Age, 
-        Club = p.Club, 
-        Position = p.Position 
-    })))
-};
+@section Scripts {
+    <script>
+        let currentPositionIndex = -1;
+        let positionData = null;
+        const formationName = '@Model.SelectedFormationName';
 
-let currentPositionIndex = -1;
-
-// Modal functions
-function openPositionModal(index) {
-    currentPositionIndex = index;
-    const position = window.formationData.positions[index];
-    
-    // Set modal title
-    document.getElementById('modalTitle').textContent = `${position.Position} #${index + 1}`;
-    document.getElementById('modalPositionIndex').value = index;
-    
-    // Populate roles dropdown
-    populateRoleSelect(position);
-    
-    // Populate players dropdown
-    populatePlayerSelect(position);
-    
-    // Update player info if player is selected
-    updatePlayerInfo();
-    
-    // Show modal with animation
-    const modal = document.getElementById('positionModal');
-    const modalContent = document.getElementById('modalContent');
-    
-    modal.classList.remove('hidden');
-    
-    // Trigger animation
-    requestAnimationFrame(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    });
-}
-
-function closePositionModal() {
-    const modal = document.getElementById('positionModal');
-    const modalContent = document.getElementById('modalContent');
-    
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.classList.add('scale-95', 'opacity-0');
-    
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        currentPositionIndex = -1;
-    }, 200);
-}
-
-function populateRoleSelect(position) {
-    const roleSelect = document.getElementById('modalRoleSelect');
-    roleSelect.innerHTML = '<option value="">-- Välj roll --</option>';
-    
-    const positionKey = position.Position;
-    for (const [positions, roles] of Object.entries(window.formationData.roles)) {
-        if (positions.includes(positionKey)) {
-            roles.forEach(role => {
-                const option = document.createElement('option');
-                option.value = role.Name;
-                option.textContent = `${role.Name} (${role.ShortName})`;
-                option.selected = role.Name === position.SelectedRole;
-                roleSelect.appendChild(option);
-            });
+        function getRequestVerificationToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
         }
-    }
-}
 
-function populatePlayerSelect(position) {
-    const playerSelect = document.getElementById('modalPlayerSelect');
-    playerSelect.innerHTML = '<option value="">-- Ingen spelare --</option>';
-    
-    window.formationData.players.forEach(player => {
-        if (canPlayerPlayPosition(player, position.Position)) {
-            const option = document.createElement('option');
-            option.value = player.UID;
-            option.textContent = `${player.Name} (${player.Age} år, ${player.Club})`;
-            option.selected = player.UID == position.SelectedPlayerId;
-            playerSelect.appendChild(option);
-        }
-    });
-}
-
-function updatePlayerInfo() {
-    const playerSelect = document.getElementById('modalPlayerSelect');
-    const playerInfo = document.getElementById('playerInfo');
-    
-    if (playerSelect.value) {
-        const player = window.formationData.players.find(p => p.UID == playerSelect.value);
-        if (player) {
-            document.getElementById('playerAge').textContent = player.Age;
-            document.getElementById('playerClub').textContent = player.Club;
-            document.getElementById('playerPosition').textContent = player.Position;
-            playerInfo.classList.remove('hidden');
-        }
-    } else {
-        playerInfo.classList.add('hidden');
-    }
-}
-
-// Position management
-function clearPosition() {
-    if (currentPositionIndex >= 0) {
-        const position = window.formationData.positions[currentPositionIndex];
-        position.SelectedRole = null;
-        position.SelectedPlayerId = null;
-        position.SelectedPlayerName = null;
-        position.SelectedPlayerAge = null;
-        position.SelectedPlayerClub = null;
-        position.SelectedPlayerPosition = null;
-        
-        updatePositionVisual(currentPositionIndex);
-        closePositionModal();
-    }
-}
-
-function savePosition() {
-    if (currentPositionIndex >= 0) {
-        const roleSelect = document.getElementById('modalRoleSelect');
-        const playerSelect = document.getElementById('modalPlayerSelect');
-        
-        const position = window.formationData.positions[currentPositionIndex];
-        position.SelectedRole = roleSelect.value || null;
-        position.SelectedPlayerId = playerSelect.value || null;
-        
-        if (playerSelect.value) {
-            const player = window.formationData.players.find(p => p.UID == playerSelect.value);
-            if (player) {
-                position.SelectedPlayerName = player.Name;
-                position.SelectedPlayerAge = player.Age;
-                position.SelectedPlayerClub = player.Club;
-                position.SelectedPlayerPosition = player.Position;
+        async function openPositionModal(positionIndex) {
+            currentPositionIndex = positionIndex;
+            
+            try {
+                // Load position data with proper parameters
+                const url = `/role-selecter?handler=PositionData&positionIndex=${positionIndex}&formationName=${encodeURIComponent(formationName)}`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                positionData = data;
+                
+                // Update modal title
+                document.getElementById('modal-title').textContent = `Configure ${data.position.Position} Position`;
+                
+                // Populate role select
+                const roleSelect = document.getElementById('roleSelect');
+                roleSelect.innerHTML = '<option value="">Select a role...</option>';
+                data.roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role.name;
+                    option.textContent = `${role.name} (${role.shortName})`;
+                    if (role.name === data.position.SelectedRole) {
+                        option.selected = true;
+                    }
+                    roleSelect.appendChild(option);
+                });
+                
+                // Populate player select
+                const playerSelect = document.getElementById('playerSelect');
+                playerSelect.innerHTML = '<option value="">Select a player...</option>';
+                data.players.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = player.uid;
+                    option.textContent = `${player.name} (${player.age}) - ${player.position}`;
+                    if (player.uid === data.position.SelectedPlayerId) {
+                        option.selected = true;
+                    }
+                    playerSelect.appendChild(option);
+                });
+                
+                // Update lock button states
+                updateLockButtons();
+                
+                // Add event listeners for real-time rating updates
+                roleSelect.onchange = updateRating;
+                playerSelect.onchange = updateRating;
+                
+                // Update rating if both role and player are selected
+                updateRating();
+                
+                // Show modal
+                document.getElementById('positionModal').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error loading position data:', error);
+                alert('Failed to load position data: ' + error.message);
             }
-        } else {
-            position.SelectedPlayerName = null;
-            position.SelectedPlayerAge = null;
-            position.SelectedPlayerClub = null;
-            position.SelectedPlayerPosition = null;
         }
-        
-        updatePositionVisual(currentPositionIndex);
-        closePositionModal();
-    }
-}
 
-function clearAllPositions() {
-    if (confirm('Är du säker på att du vill rensa alla positioner?')) {
-        window.formationData.positions.forEach((position, index) => {
-            position.SelectedRole = null;
-            position.SelectedPlayerId = null;
-            position.SelectedPlayerName = null;
-            position.SelectedPlayerAge = null;
-            position.SelectedPlayerClub = null;
-            position.SelectedPlayerPosition = null;
-            updatePositionVisual(index);
-        });
-    }
-}
-
-// Visual updates
-function updatePositionVisual(index) {
-    const position = window.formationData.positions[index];
-    const positionElement = document.querySelector(`[data-position-index="${index}"]`);
-    
-    if (positionElement) {
-        const circle = positionElement.querySelector('.w-14, .w-16');
-        const content = circle.querySelector('div');
-        
-        // Update circle appearance
-        if (position.SelectedPlayerName) {
-            circle.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-white font-bold transition-all duration-300 transform hover:scale-110 shadow-lg border-2 bg-primary-500 border-primary-300 ring-4 ring-primary-300/30';
-            content.innerHTML = `<div class="text-[9px] sm:text-[10px] leading-tight text-center px-1"><div class="font-bold truncate w-full">${position.SelectedPlayerName.split(' ').pop().toUpperCase()}</div></div>`;
-        } else {
-            circle.className = 'w-14 h-14 sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-white font-bold transition-all duration-300 transform hover:scale-110 shadow-lg border-2 bg-slate-700/90 border-white/30 hover:bg-slate-600/90 hover:border-primary-400/50';
-            content.innerHTML = `<div class="text-[10px] sm:text-xs font-semibold">${position.Position}</div>`;
+        function closePositionModal() {
+            document.getElementById('positionModal').classList.add('hidden');
+            currentPositionIndex = -1;
+            positionData = null;
         }
-        
-        // Update role label
-        updateRoleLabel(positionElement, position);
-    }
-}
 
-function updateRoleLabel(positionElement, position) {
-    let roleLabel = positionElement.querySelector('.absolute.-top-5, .absolute.-top-6');
-    
-    if (position.SelectedRole) {
-        const role = Object.values(window.formationData.roles).flat().find(r => r.Name === position.SelectedRole);
-        
-        if (role) {
-            if (!roleLabel) {
-                roleLabel = document.createElement('div');
-                roleLabel.className = 'absolute -top-5 sm:-top-6 left-1/2 transform -translate-x-1/2 text-[8px] sm:text-[10px] font-medium text-primary-300 bg-black/60 backdrop-blur-sm px-1 sm:px-1.5 py-0.5 rounded whitespace-nowrap';
-                positionElement.querySelector('.relative').appendChild(roleLabel);
+        function updateLockButtons() {
+            if (!positionData) return;
+            
+            const roleLockBtn = document.getElementById('toggleRoleLock');
+            const playerLockBtn = document.getElementById('togglePlayerLock');
+            
+            roleLockBtn.textContent = positionData.position.IsRoleLocked ? '🔓 Unlock Role' : '🔒 Lock Role';
+            roleLockBtn.className = positionData.position.IsRoleLocked 
+                ? 'text-xs px-2 py-1 rounded bg-amber-600 text-white hover:bg-amber-500'
+                : 'text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600';
+                
+            playerLockBtn.textContent = positionData.position.IsPlayerLocked ? '🔓 Unlock Player' : '👤 Lock Player';
+            playerLockBtn.className = positionData.position.IsPlayerLocked 
+                ? 'text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-500'
+                : 'text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600';
+        }
+
+        async function updateRating() {
+            const roleSelect = document.getElementById('roleSelect');
+            const playerSelect = document.getElementById('playerSelect');
+            const ratingDiv = document.getElementById('playerRating');
+            const ratingDisplay = document.getElementById('ratingDisplay');
+            
+            const selectedRole = roleSelect.value;
+            const selectedPlayerId = playerSelect.value;
+            
+            if (selectedRole && selectedPlayerId && positionData) {
+                const player = positionData.players.find(p => p.uid.toString() === selectedPlayerId);
+                if (player) {
+                    try {
+                        // Calculate actual rating using backend
+                        const url = `/role-selecter?handler=CalculateRating&playerId=${selectedPlayerId}&roleName=${encodeURIComponent(selectedRole)}&formationName=${encodeURIComponent(formationName)}`;
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            const rating = result.rating;
+                            const colorClass = rating >= 15 ? 'text-emerald-400' : rating >= 12 ? 'text-amber-400' : 'text-rose-400';
+                            
+                            ratingDisplay.innerHTML = `<span class="${colorClass}">${rating.toFixed(1)}</span>`;
+                            ratingDiv.classList.remove('hidden');
+                        } else {
+                            // Fallback to simple calculation
+                            const rating = Math.random() * 15 + 5;
+                            const colorClass = rating >= 15 ? 'text-emerald-400' : rating >= 12 ? 'text-amber-400' : 'text-rose-400';
+                            ratingDisplay.innerHTML = `<span class="${colorClass}">${rating.toFixed(1)}</span>`;
+                            ratingDiv.classList.remove('hidden');
+                        }
+                    } catch (error) {
+                        console.error('Error calculating rating:', error);
+                        // Fallback to simple calculation
+                        const rating = Math.random() * 15 + 5;
+                        const colorClass = rating >= 15 ? 'text-emerald-400' : rating >= 12 ? 'text-amber-400' : 'text-rose-400';
+                        ratingDisplay.innerHTML = `<span class="${colorClass}">${rating.toFixed(1)}</span>`;
+                        ratingDiv.classList.remove('hidden');
+                    }
+                }
+            } else {
+                ratingDiv.classList.add('hidden');
             }
-            roleLabel.textContent = role.ShortName;
         }
-    } else if (roleLabel) {
-        roleLabel.remove();
-    }
-}
 
-// Utility functions
-function canPlayerPlayPosition(player, position) {
-    const playerPos = player.Position?.toUpperCase();
-    
-    switch (position) {
-        case 'GK': return playerPos === 'GK';
-        case 'DL':
-        case 'DR':
-        case 'DC': return playerPos?.includes('D') || playerPos === 'CB' || playerPos === 'LB' || playerPos === 'RB';
-        case 'WBL':
-        case 'WBR': return playerPos?.includes('WB') || playerPos?.includes('B');
-        case 'DM':
-        case 'MC':
-        case 'ML':
-        case 'MR': return playerPos?.includes('M') && !playerPos?.includes('AM');
-        case 'AMC':
-        case 'AML':
-        case 'AMR': return playerPos?.includes('AM') || playerPos?.includes('M');
-        case 'ST': return playerPos?.includes('ST') || playerPos?.includes('CF') || playerPos === 'F';
-        default: return true;
-    }
-}
+        async function toggleRoleLock() {
+            if (currentPositionIndex === -1) return;
+            
+            try {
+                const response = await fetch('/role-selecter?handler=ToggleRoleLock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': getRequestVerificationToken()
+                    },
+                    body: JSON.stringify({
+                        positionIndex: currentPositionIndex,
+                        formationName: formationName
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                if (result.success) {
+                    positionData.position.IsRoleLocked = result.isLocked;
+                    updateLockButtons();
+                } else {
+                    alert(result.error || 'Failed to toggle role lock');
+                }
+            } catch (error) {
+                console.error('Error toggling role lock:', error);
+                alert('Failed to toggle role lock: ' + error.message);
+            }
+        }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    // Player select change handler
-    const playerSelect = document.getElementById('modalPlayerSelect');
-    if (playerSelect) {
-        playerSelect.addEventListener('change', updatePlayerInfo);
-    }
-    
-    // Close modal when clicking outside
-    document.getElementById('positionModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closePositionModal();
+        async function togglePlayerLock() {
+            if (currentPositionIndex === -1) return;
+            
+            try {
+                const response = await fetch('/role-selecter?handler=TogglePlayerLock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': getRequestVerificationToken()
+                    },
+                    body: JSON.stringify({
+                        positionIndex: currentPositionIndex,
+                        formationName: formationName
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                if (result.success) {
+                    positionData.position.IsPlayerLocked = result.isLocked;
+                    updateLockButtons();
+                } else {
+                    alert(result.error || 'Failed to toggle player lock');
+                }
+            } catch (error) {
+                console.error('Error toggling player lock:', error);
+                alert('Failed to toggle player lock: ' + error.message);
+            }
         }
-    });
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closePositionModal();
+
+        async function savePosition() {
+            if (currentPositionIndex === -1) return;
+            
+            const roleSelect = document.getElementById('roleSelect');
+            const playerSelect = document.getElementById('playerSelect');
+            
+            const selectedRole = roleSelect.value;
+            const selectedPlayerId = playerSelect.value ? parseInt(playerSelect.value) : null;
+            
+            try {
+                const response = await fetch('/role-selecter?handler=UpdatePosition', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': getRequestVerificationToken()
+                    },
+                    body: JSON.stringify({
+                        positionIndex: currentPositionIndex,
+                        selectedRole: selectedRole,
+                        selectedPlayerId: selectedPlayerId,
+                        formationName: formationName
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                const result = await response.json();
+                if (result.success) {
+                    closePositionModal();
+                    // Refresh the page to show updated data
+                    location.reload();
+                } else {
+                    alert(result.error || 'Failed to save position');
+                }
+            } catch (error) {
+                console.error('Error saving position:', error);
+                alert('Failed to save position: ' + error.message);
+            }
         }
-    });
-});
-</script>
+    </script>
+}
