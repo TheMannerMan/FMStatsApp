@@ -1,0 +1,322 @@
+@page "/"
+@using FMStatsApp.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject IPlayerSessionService PlayerSession
+@inject IHtmlParserService HtmlParser
+@inject ILogger<Index> Logger
+@inject NavigationManager Navigation
+
+<PageTitle>FM Stats App</PageTitle>
+
+<div class="mx-auto max-w-7xl px-4 py-10">
+    <div class="text-center mb-16">
+        <h1 class="text-4xl font-bold tracking-tight text-slate-100 sm:text-6xl mb-6">
+            FM Stats App
+        </h1>
+        <p class="text-lg leading-8 text-slate-300 max-w-2xl mx-auto mb-8">
+            Analysera dina Football Manager-spelare och bygg den perfekta startelvan med avancerad optimering.
+        </p>
+
+        @if (hasPlayers)
+        {
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <a href="/formations" class="inline-flex items-center rounded-md bg-primary-500 px-6 py-3 text-base font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300 transition">
+                    Bygg Startelva
+                </a>
+                <a href="/players" class="inline-flex items-center rounded-md bg-slate-600 px-6 py-3 text-base font-medium text-white shadow hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400 transition">
+                    Visa Spelare (@playerCount)
+                </a>
+            </div>
+
+            <!-- Add new data section -->
+            <div class="max-w-2xl mx-auto mb-8">
+                <div class="bg-slate-800/30 border border-slate-600/50 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-slate-200 mb-3">Ladda upp ny data</h3>
+                    <p class="text-slate-400 text-sm mb-4">Vill du ladda upp en ny HTML-fil? Detta kommer att ersätta dina nuvarande @playerCount spelare.</p>
+
+                    @if (!string.IsNullOrEmpty(uploadStatusMessage))
+                    {
+                        <div class="mb-4 rounded-lg border @(isUploadError ? "border-rose-500/30 bg-rose-500/10 text-rose-200" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200") p-3 text-sm">
+                            @uploadStatusMessage
+                        </div>
+                    }
+
+                    <div class="space-y-4">
+                        <div>
+                            <InputFile OnChange="@OnFileSelected" disabled="@isUploading"
+                                       class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-600 file:text-white hover:file:bg-primary-500 file:disabled:opacity-50 file:disabled:cursor-not-allowed"
+                                       accept=".html" />
+                        </div>
+
+                        @if (selectedFile != null)
+                        {
+                            <div class="p-3 bg-slate-700/50 rounded-lg">
+                                <div class="flex items-center text-sm text-slate-300">
+                                    <svg class="w-4 h-4 mr-2 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    <span class="font-medium">@selectedFile.Name</span>
+                                    <span class="ml-2 text-slate-400">(@(selectedFile.Size / 1024) KB)</span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="flex gap-3">
+                            <button @onclick="HandleFileUpload" disabled="@(selectedFile == null || isUploading)"
+                                    class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium">
+                                @if (isUploading)
+                                {
+                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Laddar upp...</span>
+                                }
+                                else
+                                {
+                                    <span>Ladda upp & Analysera</span>
+                                }
+                            </button>
+
+                            <button @onclick="ClearDataAsync" disabled="@isUploading"
+                                    class="px-4 py-2 bg-rose-600 text-white rounded-md hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                                Rensa Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Initial upload section for new users -->
+            <div class="max-w-2xl mx-auto mb-8">
+                <div class="bg-gradient-to-br from-primary-500/10 to-emerald-500/10 border border-primary-500/30 rounded-2xl p-8">
+                    <h3 class="text-xl font-semibold text-primary-200 mb-3">Kom igång med FM Stats</h3>
+                    <p class="text-primary-100/80 mb-6">Ladda upp din Football Manager HTML-export för att börja analysera spelare och bygga optimala startelvor.</p>
+
+                    @if (!string.IsNullOrEmpty(uploadStatusMessage))
+                    {
+                        <div class="mb-6 rounded-lg border @(isUploadError ? "border-rose-500/30 bg-rose-500/10 text-rose-200" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200") p-4">
+                            @uploadStatusMessage
+                        </div>
+                    }
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-primary-200 mb-3">
+                                Välj din HTML-fil från Football Manager
+                            </label>
+                            <InputFile OnChange="@OnFileSelected" disabled="@isUploading"
+                                       class="block w-full text-sm text-slate-300 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-600 file:text-white hover:file:bg-primary-500 file:disabled:opacity-50 file:disabled:cursor-not-allowed"
+                                       accept=".html" />
+                        </div>
+
+                        @if (selectedFile != null)
+                        {
+                            <div class="p-4 bg-slate-800/50 rounded-lg border border-slate-600/50">
+                                <div class="flex items-center text-sm text-slate-300">
+                                    <svg class="w-5 h-5 mr-3 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    <span class="font-medium">@selectedFile.Name</span>
+                                    <span class="ml-2 text-slate-400">(@(selectedFile.Size / 1024) KB)</span>
+                                </div>
+                            </div>
+                        }
+
+                        <button @onclick="HandleFileUpload" disabled="@(selectedFile == null || isUploading)"
+                                class="w-full inline-flex items-center justify-center px-6 py-4 bg-primary-600 text-white rounded-lg hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-base">
+                            @if (isUploading)
+                            {
+                                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Analyserar spelare...</span>
+                            }
+                            else
+                            {
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <span>Ladda upp & Analysera Spelare</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions section -->
+            <div class="max-w-3xl mx-auto mb-8">
+                <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-blue-200 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Så här exporterar du från Football Manager
+                    </h3>
+                    <ol class="space-y-3 text-blue-100 text-sm">
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 rounded-full text-xs font-bold mr-3 mt-0.5">1</span>
+                            <span>Gå till <strong>Squad ? Players</strong> i Football Manager</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 rounded-full text-xs font-bold mr-3 mt-0.5">2</span>
+                            <span>Lägg till kolumner för alla attribut du vill analysera (tekniska, mentala, fysiska)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 rounded-full text-xs font-bold mr-3 mt-0.5">3</span>
+                            <span>Högerklicka och välj <strong>"Export as HTML"</strong></span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-300 rounded-full text-xs font-bold mr-3 mt-0.5">4</span>
+                            <span>Spara filen och ladda upp den här ovan</span>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Feature cards -->
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+        <div class="rounded-xl border border-white/10 bg-white/5 backdrop-blur p-6">
+            <div class="text-primary-400 mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-100 mb-2">Spelaranalys</h3>
+            <p class="text-slate-300 text-sm">Analysera dina spelares attribut och se deras lämplighet för olika roller och positioner.</p>
+        </div>
+
+        <div class="rounded-xl border border-white/10 bg-white/5 backdrop-blur p-6">
+            <div class="text-primary-400 mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V8a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-100 mb-2">Formationsbyggare</h3>
+            <p class="text-slate-300 text-sm">Välj formation och bygg din startelva med avancerade rollval och positionslåsning.</p>
+        </div>
+
+        <div class="rounded-xl border border-white/10 bg-white/5 backdrop-blur p-6">
+            <div class="text-primary-400 mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-100 mb-2">AI-optimering</h3>
+            <p class="text-slate-300 text-sm">Använd Hungarian-algoritm för att hitta den optimala spelarkombinationen för din taktik.</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool hasPlayers = false;
+    private int playerCount = 0;
+    private IBrowserFile? selectedFile;
+    private bool isUploading = false;
+    private string uploadStatusMessage = "";
+    private bool isUploadError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            hasPlayers = PlayerSession.HasPlayers();
+            if (hasPlayers)
+            {
+                playerCount = await PlayerSession.GetPlayerCountAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error checking for players on index page");
+        }
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        uploadStatusMessage = "";
+        StateHasChanged();
+    }
+
+    private async Task HandleFileUpload()
+    {
+        if (selectedFile == null) return;
+
+        isUploading = true;
+        uploadStatusMessage = "";
+        isUploadError = false;
+        StateHasChanged();
+
+        try
+        {
+            if (!selectedFile.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            {
+                uploadStatusMessage = "Endast HTML-filer är tillåtna.";
+                isUploadError = true;
+                return;
+            }
+
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
+            var parseResult = await HtmlParser.ParsePlayersAsync(stream);
+
+            if (!parseResult.Success)
+            {
+                uploadStatusMessage = $"Parsningsfel: {parseResult.ErrorMessage}";
+                isUploadError = true;
+                return;
+            }
+
+            await PlayerSession.SavePlayersAsync(parseResult.Players);
+
+            uploadStatusMessage = $"Framgångsrikt uppladdade {parseResult.SuccessfullyParsed} spelare!";
+            if (parseResult.ParseErrors.Any())
+            {
+                uploadStatusMessage += $" Varning: {parseResult.ParseErrors.Count} rader kunde inte parsas.";
+            }
+
+            // Refresh the page state
+            hasPlayers = true;
+            playerCount = parseResult.SuccessfullyParsed;
+            selectedFile = null;
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading file: {FileName}", selectedFile?.Name ?? "unknown");
+            uploadStatusMessage = "Ett oväntat fel inträffade vid uppladdning.";
+            isUploadError = true;
+        }
+        finally
+        {
+            isUploading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ClearDataAsync()
+    {
+        try
+        {
+            await PlayerSession.ClearPlayersAsync();
+            uploadStatusMessage = "Spelardata har rensats.";
+            isUploadError = false;
+            hasPlayers = false;
+            playerCount = 0;
+            selectedFile = null;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error clearing player data");
+            uploadStatusMessage = "Fel vid rensning av spelardata.";
+            isUploadError = true;
+        }
+    }
+}

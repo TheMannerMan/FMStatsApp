@@ -1,0 +1,441 @@
+@page "/formation-builder/{FormationName}"
+@using FMStatsApp.Services
+@inject IPlayerSessionService PlayerSession
+@inject IStartingXIOptimizerService OptimizerService
+@inject IFormationStateService FormationState
+@inject ILogger<FormationBuilder> Logger
+@inject NavigationManager Navigation
+
+<PageTitle>Formation Builder - @FormationName</PageTitle>
+
+<div class="mx-auto max-w-7xl px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-semibold tracking-tight text-slate-100">Formation Builder</h1>
+            <p class="text-slate-400 mt-2">Formation: @FormationName</p>
+        </div>
+        <div class="flex gap-3">
+            <button @onclick="OptimizeFormation" disabled="@isOptimizing" 
+                    class="inline-flex items-center rounded-md bg-emerald-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                @if (isOptimizing)
+                {
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Optimizing...</span>
+                }
+                else
+                {
+                    <span>Optimize Formation</span>
+                }
+            </button>
+            <button @onclick="ResetFormation" disabled="@isOptimizing" 
+                    class="inline-flex items-center rounded-md bg-rose-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                Reset Formation
+            </button>
+            <a href="/formations" class="inline-flex items-center rounded-md bg-slate-600 px-5 py-2 text-sm font-medium text-white shadow hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                Back to Formations
+            </a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        <div class="mb-6 rounded-xl border @(isStatusError ? "border-rose-500/30 bg-rose-500/10 text-rose-200" : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200") p-4">
+            @statusMessage
+        </div>
+    }
+
+    @if (selectedFormation != null && formationPositions.Any())
+    {
+        <!-- Formation Grid -->
+        <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-8 shadow">
+            <div class="formation-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 20px; min-height: 600px;">
+                @foreach (var position in formationPositions)
+                {
+                    <div class="position-slot" 
+                         style="grid-row: @position.GridRow; grid-column: @position.GridColumn;"
+                         @onclick="() => OpenPositionModal(position)">
+                        
+                        <div class="position-card bg-slate-800/60 border border-white/20 rounded-lg p-4 cursor-pointer hover:bg-slate-700/60 transition-colors min-h-[120px] flex flex-col">
+                            <!-- Position Header -->
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold text-slate-400 uppercase">@position.Position.ToString()</span>
+                                <div class="flex gap-1">
+                                    @if (position.IsRoleLocked)
+                                    {
+                                        <span class="text-amber-400 text-xs" title="Role Locked">??</span>
+                                    }
+                                    @if (position.IsPlayerLocked)
+                                    {
+                                        <span class="text-blue-400 text-xs" title="Player Locked">??</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Selected Role -->
+                            <div class="mb-2">
+                                @if (!string.IsNullOrEmpty(position.SelectedRole))
+                                {
+                                    <span class="inline-flex items-center rounded bg-primary-500/20 px-2 py-0.5 text-xs font-medium text-primary-300">
+                                        @position.SelectedRole
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-xs text-slate-500">No role selected</span>
+                                }
+                            </div>
+
+                            <!-- Selected Player -->
+                            <div class="flex-grow flex flex-col justify-end">
+                                @if (position.SelectedPlayer != null)
+                                {
+                                    <div class="text-sm font-medium text-slate-200">@position.SelectedPlayer.Name</div>
+                                    <div class="text-xs text-slate-400">Age: @position.SelectedPlayer.Age</div>
+                                    @if (!string.IsNullOrEmpty(position.SelectedRole))
+                                    {
+                                        var rating = CalculatePlayerRoleRating(position.SelectedPlayer, position.SelectedRole);
+                                        var colorClass = rating >= 15 ? "text-emerald-400" : rating >= 12 ? "text-amber-400" : "text-rose-400";
+                                        <div class="text-xs @colorClass">Rating: @rating.ToString("F1")</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="text-sm text-slate-500">No player selected</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else if (isLoading)
+    {
+        <div class="flex items-center justify-center py-20">
+            <div class="text-center">
+                <svg class="animate-spin h-8 w-8 text-primary-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-slate-400">Loading formation...</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-20">
+            <p class="text-slate-400">Formation not found.</p>
+            <a href="/formations" class="inline-flex items-center rounded-md bg-primary-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300 mt-4">
+                Back to Formations
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Position Modal -->
+@if (showModal && selectedPosition != null)
+{
+    <PositionModal Position="@selectedPosition" 
+                   AvailablePlayers="@availablePlayers"
+                   AllRoles="@allRoles"
+                   OnClose="ClosePositionModal"
+                   OnSave="HandleSavePosition"
+                   OnToggleRoleLock="ToggleRoleLock"
+                   OnTogglePlayerLock="TogglePlayerLock" />
+}
+
+@code {
+    [Parameter] public string FormationName { get; set; } = "";
+
+    private Formation? selectedFormation;
+    private List<FormationPosition> formationPositions = new();
+    private List<Player> availablePlayers = new();
+    private List<RoleDefinition> allRoles = new();
+    
+    private bool isLoading = true;
+    private bool isOptimizing = false;
+    private bool showModal = false;
+    private FormationPosition? selectedPosition;
+    
+    private string statusMessage = "";
+    private bool isStatusError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFormation();
+    }
+
+    private async Task LoadFormation()
+    {
+        isLoading = true;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(FormationName))
+            {
+                Navigation.NavigateTo("/formations");
+                return;
+            }
+
+            selectedFormation = FormationCatalog.AllFormations.FirstOrDefault(f => f.Name == FormationName);
+            if (selectedFormation == null)
+            {
+                Navigation.NavigateTo("/formations");
+                return;
+            }
+
+            availablePlayers = await PlayerSession.GetPlayersAsync();
+            allRoles = RoleCatalog.AllRoles;
+
+            // Try to load existing positions from state
+            formationPositions = await FormationState.GetFormationPositionsAsync(FormationName);
+            
+            if (!formationPositions.Any())
+            {
+                // Create new positions
+                formationPositions = FormationState.CreateFormationPositions(selectedFormation);
+                await FormationState.SaveFormationPositionsAsync(FormationName, formationPositions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading formation {FormationName}", FormationName);
+            statusMessage = "Error loading formation.";
+            isStatusError = true;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OptimizeFormation()
+    {
+        if (selectedFormation == null || isOptimizing) return;
+
+        isOptimizing = true;
+        statusMessage = "";
+        isStatusError = false;
+
+        try
+        {
+            if (!availablePlayers.Any())
+            {
+                statusMessage = "No players available for optimization.";
+                isStatusError = true;
+                return;
+            }
+
+            var result = OptimizerService.OptimizeStartingXI(selectedFormation, availablePlayers, formationPositions);
+
+            if (!result.Success)
+            {
+                statusMessage = $"Optimization failed: {result.ErrorMessage}";
+                isStatusError = true;
+                return;
+            }
+
+            // Update positions with optimization results, respecting locks
+            foreach (var assignment in result.Assignments)
+            {
+                var pos = formationPositions.FirstOrDefault(p => p.Index == assignment.Position.Index);
+                if (pos != null)
+                {
+                    // Update role only if not locked
+                    if (!pos.IsRoleLocked)
+                    {
+                        pos.SelectedRole = assignment.Role.Name;
+                    }
+                    
+                    // Update player only if not locked
+                    if (!pos.IsPlayerLocked)
+                    {
+                        pos.SelectedPlayerId = assignment.Player.UID;
+                        pos.SelectedPlayer = assignment.Player;
+                    }
+                }
+            }
+
+            await FormationState.SaveFormationPositionsAsync(FormationName, formationPositions);
+
+            var lockedCount = formationPositions.Count(p => p.IsLocked);
+            var lockedMessage = lockedCount > 0 ? $" ({lockedCount} locked positions respected)" : "";
+            statusMessage = $"Optimization complete! Average rating: {result.AverageRating:F1}{lockedMessage}";
+            isStatusError = false;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during optimization");
+            statusMessage = "An error occurred during optimization.";
+            isStatusError = true;
+        }
+        finally
+        {
+            isOptimizing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResetFormation()
+    {
+        if (selectedFormation == null || isOptimizing) return;
+
+        try
+        {
+            formationPositions = FormationState.CreateFormationPositions(selectedFormation);
+            await FormationState.SaveFormationPositionsAsync(FormationName, formationPositions);
+            
+            statusMessage = "Formation has been reset!";
+            isStatusError = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error resetting formation");
+            statusMessage = "Error resetting formation.";
+            isStatusError = true;
+        }
+    }
+
+    private void OpenPositionModal(FormationPosition position)
+    {
+        selectedPosition = position;
+        showModal = true;
+        StateHasChanged();
+    }
+
+    private void ClosePositionModal()
+    {
+        showModal = false;
+        selectedPosition = null;
+        StateHasChanged();
+    }
+
+    private async Task HandleSavePosition((FormationPosition position, string? role, long? playerId) args)
+    {
+        try
+        {
+            var (position, selectedRole, selectedPlayerId) = args;
+            
+            // Check if player is already selected elsewhere
+            if (selectedPlayerId.HasValue)
+            {
+                var existingPosition = formationPositions.FirstOrDefault(p => 
+                    p.Index != position.Index && 
+                    p.SelectedPlayerId == selectedPlayerId.Value);
+                
+                if (existingPosition != null)
+                {
+                    if (!existingPosition.IsPlayerLocked)
+                    {
+                        existingPosition.SelectedPlayerId = null;
+                        existingPosition.SelectedPlayer = null;
+                    }
+                    else
+                    {
+                        statusMessage = "Player is locked on another position";
+                        isStatusError = true;
+                        return;
+                    }
+                }
+            }
+
+            // Update position only if not locked
+            if (!position.IsRoleLocked || string.IsNullOrEmpty(position.SelectedRole))
+            {
+                position.SelectedRole = selectedRole;
+            }
+
+            if (!position.IsPlayerLocked)
+            {
+                position.SelectedPlayerId = selectedPlayerId;
+                position.SelectedPlayer = selectedPlayerId.HasValue ? 
+                    availablePlayers.FirstOrDefault(p => p.UID == selectedPlayerId.Value) : null;
+            }
+
+            await FormationState.SaveFormationPositionsAsync(FormationName, formationPositions);
+            ClosePositionModal();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error saving position");
+            statusMessage = "Error saving position.";
+            isStatusError = true;
+        }
+    }
+
+    private async Task ToggleRoleLock(FormationPosition position)
+    {
+        try
+        {
+            position.IsRoleLocked = !position.IsRoleLocked;
+            await FormationState.SaveFormationPositionsAsync(FormationName, formationPositions);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling role lock");
+        }
+    }
+
+    private async Task TogglePlayerLock(FormationPosition position)
+    {
+        try
+        {
+            position.IsPlayerLocked = !position.IsPlayerLocked;
+            await FormationState.SaveFormationPositionsAsync(FormationName, formationPositions);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error toggling player lock");
+        }
+    }
+
+    private double CalculatePlayerRoleRating(Player player, string roleName)
+    {
+        if (string.IsNullOrEmpty(roleName)) return 0;
+        
+        var role = allRoles.FirstOrDefault(r => r.Name == roleName);
+        if (role == null) return 0;
+        
+        return OptimizerService.CalculatePlayerRoleScore(player, role);
+    }
+
+    private List<RoleDefinition> GetRolesForPosition(Position position) =>
+        allRoles.Where(r => r.Positions.Contains(position)).ToList();
+
+    private List<Player> GetPlayersForPosition(Position position)
+    {
+        return availablePlayers.Where(p => CanPlayerPlayPosition(p, position)).ToList();
+    }
+
+    private bool CanPlayerPlayPosition(Player player, Models.Position position)
+    {
+        var playerPosition = player.Position?.ToUpper();
+        
+        if (position == Models.Position.GK) 
+            return playerPosition == "GK";
+        
+        if (position == Models.Position.DL || position == Models.Position.DR || position == Models.Position.DC)
+            return playerPosition?.Contains("D") == true || playerPosition == "CB" || playerPosition == "LB" || playerPosition == "RB";
+        
+        if (position == Models.Position.WBL || position == Models.Position.WBR)
+            return playerPosition?.Contains("WB") == true || playerPosition?.Contains("B") == true;
+        
+        if (position == Models.Position.DM || position == Models.Position.MC || position == Models.Position.ML || position == Models.Position.MR)
+            return playerPosition?.Contains("M") == true && !playerPosition.Contains("AM");
+        
+        if (position == Models.Position.AMC || position == Models.Position.AML || position == Models.Position.AMR)
+            return playerPosition?.Contains("AM") == true || playerPosition?.Contains("M") == true;
+        
+        if (position == Models.Position.ST)
+            return playerPosition?.Contains("ST") == true || playerPosition?.Contains("CF") == true || playerPosition == "F";
+        
+        return true; // fallback
+    }
+}

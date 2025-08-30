@@ -1,0 +1,125 @@
+@page "/formations"
+@using FMStatsApp.Services
+@inject IPlayerSessionService PlayerSession
+@inject ILogger<Formations> Logger
+@inject NavigationManager Navigation
+
+<PageTitle>Formations - FM Stats App</PageTitle>
+
+<div class="mx-auto max-w-7xl px-4 py-10">
+    <h1 class="text-3xl font-bold tracking-tight mb-8">Choose Formation</h1>
+    
+    @if (noPlayersAvailable)
+    {
+        <div class="rounded-xl border border-sky-500/30 bg-sky-500/10 p-8 text-slate-200 mb-8">
+            <h5 class="text-lg font-semibold mb-2">No Players Found</h5>
+            <p class="text-sm text-slate-300 mb-4">To create your best XI you need to upload players first.</p>
+            <a href="/upload" class="inline-flex items-center rounded-md bg-primary-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300">Upload Players</a>
+        </div>
+    }
+    
+    <p class="text-slate-300 mb-8">Choose a formation to generate your best starting XI based on imported players. More formations and graphics can be added later.</p>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        @foreach (var formation in formations)
+        {
+            <div class="group relative overflow-hidden rounded-xl border border-slate-700/60 bg-slate-900/50 backdrop-blur hover:border-primary-400 transition shadow hover:shadow-primary-400/20 @(noPlayersAvailable ? "opacity-50 pointer-events-none" : "cursor-pointer")"
+                 @onclick="() => SelectFormation(formation.Name)">
+                <div class="p-5 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-white group-hover:text-primary-300 transition">@formation.Name</h2>
+                        <span class="text-xs rounded bg-slate-800 px-2 py-1 text-slate-400">@formation.Positions.Count players</span>
+                    </div>
+                    
+                    <div class="relative mb-4 aspect-[4/3] rounded-lg bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center ring-1 ring-inset ring-slate-700">
+                        <div class="formation-preview" style="display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 8px; width: 200px; height: 150px;">
+                            @{
+                                var positionCounts = new Dictionary<Position, int>();
+                                for (int i = 0; i < formation.Positions.Count; i++)
+                                {
+                                    var pos = formation.Positions[i];
+                                    if (!positionCounts.ContainsKey(pos))
+                                        positionCounts[pos] = 0;
+                                    
+                                    var positionIndex = positionCounts[pos];
+                                    positionCounts[pos]++;
+                                    
+                                    var (gridRow, gridColumn) = GetGridPosition(pos, positionIndex, formation);
+                                    
+                                    <div style="grid-row: @gridRow; grid-column: @gridColumn;" 
+                                         class="w-6 h-6 bg-primary-500/80 rounded-full border-2 border-white/50 flex items-center justify-center">
+                                        <span class="text-[8px] font-bold text-white">@pos.ToString().Substring(0, Math.Min(2, pos.ToString().Length))</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(formation.Description))
+                    {
+                        <p class="text-sm text-slate-400 flex-grow">@formation.Description</p>
+                    }
+                    
+                    <div class="mt-4 pt-4 border-t border-slate-700">
+                        <button class="w-full inline-flex items-center justify-center rounded-md bg-primary-600/20 px-4 py-2 text-sm font-medium text-primary-300 hover:bg-primary-600/30 transition group-hover:bg-primary-600 group-hover:text-white">
+                            Select Formation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Formation> formations = new();
+    private bool noPlayersAvailable = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        formations = FormationCatalog.AllFormations;
+        
+        try 
+        {
+            var players = await PlayerSession.GetPlayersAsync();
+            noPlayersAvailable = players.Count == 0;
+            Logger.LogInformation("Formations: Found {count} players", players.Count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error checking for players in Formations");
+            noPlayersAvailable = true;
+        }
+    }
+
+    private void SelectFormation(string formationName)
+    {
+        if (noPlayersAvailable) return;
+        
+        Navigation.NavigateTo($"/formation-builder/{Uri.EscapeDataString(formationName)}");
+    }
+
+    private (int gridRow, int gridColumn) GetGridPosition(Position position, int positionIndex, Formation formation)
+    {
+        var positionCount = formation.Positions.Count(p => p == position);
+
+        return position switch
+        {
+            Position.GK => (5, 3),
+            Position.DL => (4, 1),
+            Position.DC => (4, positionCount == 1 ? 3 : positionCount == 2 ? (positionIndex == 0 ? 2 : 4) : (positionIndex == 0 ? 2 : positionIndex == 1 ? 3 : 4)),
+            Position.DR => (4, 5),
+            Position.WBL => (4, 1),
+            Position.WBR => (4, 5),
+            Position.DM => (3, positionCount == 1 ? 3 : (positionIndex == 0 ? 2 : 4)),
+            Position.ML => (3, 1),
+            Position.MC => (3, positionCount == 1 ? 3 : positionCount == 2 ? (positionIndex == 0 ? 2 : 4) : (2 + positionIndex)),
+            Position.MR => (3, 5),
+            Position.AML => (2, 1),
+            Position.AMC => (2, 3),
+            Position.AMR => (2, 5),
+            Position.ST => (1, positionCount == 1 ? 3 : (positionIndex == 0 ? 2 : 4)),
+            _ => (1, 1)
+        };
+    }
+}

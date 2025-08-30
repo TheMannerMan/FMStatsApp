@@ -1,0 +1,192 @@
+@page "/players"
+@using FMStatsApp.Services
+@inject IPlayerSessionService PlayerSession
+@inject ILogger<Players> Logger
+
+<PageTitle>Players - FM Stats App</PageTitle>
+
+<div class="mx-auto max-w-7xl px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-semibold tracking-tight text-slate-100">Players</h1>
+            <p class="text-slate-400 mt-2">@players.Count players loaded</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="/formations" class="inline-flex items-center rounded-md bg-primary-500 px-5 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300">
+                Build Starting XI
+            </a>
+            <a href="/upload" class="inline-flex items-center rounded-md bg-slate-600 px-5 py-2 text-sm font-medium text-white shadow hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                Upload New Data
+            </a>
+        </div>
+    </div>
+
+    @if (!players.Any())
+    {
+        <div class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-8 text-center">
+            <h3 class="text-lg font-semibold text-amber-200 mb-2">No Players Found</h3>
+            <p class="text-amber-100 text-sm mb-4">You need to upload player data first.</p>
+            <a href="/upload" class="inline-flex items-center rounded-md bg-primary-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300">
+                Upload Players
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Search and Filters -->
+        <div class="mb-6 space-y-4">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <input @bind="searchTerm" @oninput="OnSearchChanged" placeholder="Search players..." 
+                           class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50" />
+                </div>
+                <div>
+                    <select @bind="positionFilter" @bind:after="OnFilterChanged"
+                            class="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                        <option value="">All Positions</option>
+                        @foreach (var position in availablePositions)
+                        {
+                            <option value="@position">@position</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Grid -->
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            @foreach (var player in filteredPlayers)
+            {
+                <div class="rounded-xl border border-white/10 bg-white/5 backdrop-blur p-6 hover:bg-white/10 transition-colors">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-100">@player.Name</h3>
+                            <p class="text-sm text-slate-400">@player.Age years old</p>
+                        </div>
+                        <span class="inline-flex items-center rounded bg-primary-500/20 px-2 py-0.5 text-xs font-medium text-primary-300">
+                            @player.Position
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Club:</span>
+                            <span class="text-slate-200">@player.Club</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Nationality:</span>
+                            <span class="text-slate-200">@player.Nationality</span>
+                        </div>
+                        @if (player.AverageRating > 0)
+                        {
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Avg Rating:</span>
+                                <span class="text-slate-200">@player.AverageRating.ToString("F1")</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Key Attributes -->
+                    <div class="mt-4 pt-4 border-t border-white/10">
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            @if (player.Position?.ToUpper() == "GK")
+                            {
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Reflexes:</span>
+                                    <span class="text-slate-200">@player.Reflexes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Handling:</span>
+                                    <span class="text-slate-200">@player.Handling</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Pace:</span>
+                                    <span class="text-slate-200">@player.Pace</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Technique:</span>
+                                    <span class="text-slate-200">@player.Technique</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Passing:</span>
+                                    <span class="text-slate-200">@player.Passing</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Decisions:</span>
+                                    <span class="text-slate-200">@player.Decisions</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!filteredPlayers.Any())
+        {
+            <div class="text-center py-12">
+                <p class="text-slate-400">No players match your search criteria.</p>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<Player> players = new();
+    private List<Player> filteredPlayers = new();
+    private List<string> availablePositions = new();
+    private string searchTerm = "";
+    private string positionFilter = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            players = await PlayerSession.GetPlayersAsync();
+            availablePositions = players.Select(p => p.Position ?? "Unknown")
+                                       .Where(p => !string.IsNullOrEmpty(p))
+                                       .Distinct()
+                                       .OrderBy(p => p)
+                                       .ToList();
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading players");
+        }
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        searchTerm = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    private void OnFilterChanged()
+    {
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        filteredPlayers = players.Where(player =>
+        {
+            // Search filter
+            var matchesSearch = string.IsNullOrEmpty(searchTerm) || 
+                               player.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                               (player.Club?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                               (player.Nationality?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false);
+
+            // Position filter
+            var matchesPosition = string.IsNullOrEmpty(positionFilter) || 
+                                 player.Position == positionFilter;
+
+            return matchesSearch && matchesPosition;
+        }).ToList();
+
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,182 @@
+@using FMStatsApp.Services
+@inject IStartingXIOptimizerService OptimizerService
+
+<div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @onclick="OnClose"></div>
+
+        <div class="inline-block align-bottom bg-slate-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+            <div class="sm:flex sm:items-start">
+                <div class="w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg leading-6 font-medium text-slate-100" id="modal-title">
+                            Configure @Position.Position.ToString() Position
+                        </h3>
+                        <button @onclick="OnClose" class="text-slate-400 hover:text-slate-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Role Selection -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-slate-200">Role</label>
+                                <button @onclick="() => OnToggleRoleLock.InvokeAsync(Position)" 
+                                        class="text-xs px-2 py-1 rounded @(Position.IsRoleLocked ? "bg-amber-600 text-white hover:bg-amber-500" : "bg-slate-700 text-slate-300 hover:bg-slate-600")">
+                                    @(Position.IsRoleLocked ? "?? Unlock Role" : "?? Lock Role")
+                                </button>
+                            </div>
+                            <select @bind="selectedRole" @bind:after="OnRoleChanged"
+                                    class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                                <option value="">Select a role...</option>
+                                @foreach (var role in rolesForPosition)
+                                {
+                                    <option value="@role.Name">@role.Name (@role.ShortName)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Player Selection -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-slate-200">Player</label>
+                                <button @onclick="() => OnTogglePlayerLock.InvokeAsync(Position)" 
+                                        class="text-xs px-2 py-1 rounded @(Position.IsPlayerLocked ? "bg-blue-600 text-white hover:bg-blue-500" : "bg-slate-700 text-slate-300 hover:bg-slate-600")">
+                                    @(Position.IsPlayerLocked ? "?? Unlock Player" : "?? Lock Player")
+                                </button>
+                            </div>
+                            <select @bind="selectedPlayerId" @bind:after="OnPlayerChanged"
+                                    class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-400/50">
+                                <option value="">Select a player...</option>
+                                @foreach (var player in playersForPosition)
+                                {
+                                    <option value="@player.UID">@player.Name (@player.Age) - @player.Position</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Player Rating Display -->
+                        @if (!string.IsNullOrEmpty(selectedRole) && selectedPlayerId.HasValue && currentRating.HasValue)
+                        {
+                            <div>
+                                <label class="block text-sm font-medium text-slate-200 mb-2">Role Rating</label>
+                                <div class="text-lg font-bold @(currentRating >= 15 ? "text-emerald-400" : currentRating >= 12 ? "text-amber-400" : "text-rose-400")">
+                                    @currentRating.Value.ToString("F1")
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button @onclick="OnClose" 
+                                class="inline-flex justify-center rounded-md border border-slate-600 bg-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500">
+                            Cancel
+                        </button>
+                        <button @onclick="SavePosition" 
+                                class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public FormationPosition Position { get; set; } = null!;
+    [Parameter] public List<Player> AvailablePlayers { get; set; } = new();
+    [Parameter] public List<RoleDefinition> AllRoles { get; set; } = new();
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<(FormationPosition position, string? role, long? playerId)> OnSave { get; set; }
+    [Parameter] public EventCallback<FormationPosition> OnToggleRoleLock { get; set; }
+    [Parameter] public EventCallback<FormationPosition> OnTogglePlayerLock { get; set; }
+
+    private string? selectedRole;
+    private long? selectedPlayerId;
+    private double? currentRating;
+
+    private List<RoleDefinition> rolesForPosition = new();
+    private List<Player> playersForPosition = new();
+
+    protected override void OnParametersSet()
+    {
+        // Initialize form with current position data
+        selectedRole = Position.SelectedRole;
+        selectedPlayerId = Position.SelectedPlayerId;
+
+        // Get roles and players for this position
+        rolesForPosition = AllRoles.Where(r => r.Positions.Contains(Position.Position)).ToList();
+        playersForPosition = AvailablePlayers.Where(p => CanPlayerPlayPosition(p, Position.Position)).ToList();
+
+        // Calculate initial rating if both role and player are selected
+        UpdateRating();
+    }
+
+    private void OnRoleChanged()
+    {
+        UpdateRating();
+    }
+
+    private void OnPlayerChanged()
+    {
+        UpdateRating();
+    }
+
+    private void UpdateRating()
+    {
+        if (!string.IsNullOrEmpty(selectedRole) && selectedPlayerId.HasValue)
+        {
+            var player = playersForPosition.FirstOrDefault(p => p.UID == selectedPlayerId.Value);
+            var role = rolesForPosition.FirstOrDefault(r => r.Name == selectedRole);
+            
+            if (player != null && role != null)
+            {
+                currentRating = OptimizerService.CalculatePlayerRoleScore(player, role);
+            }
+            else
+            {
+                currentRating = null;
+            }
+        }
+        else
+        {
+            currentRating = null;
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task SavePosition()
+    {
+        await OnSave.InvokeAsync((Position, selectedRole, selectedPlayerId));
+    }
+
+    private bool CanPlayerPlayPosition(Player player, Models.Position position)
+    {
+        var playerPosition = player.Position?.ToUpper();
+        
+        if (position == Models.Position.GK) 
+            return playerPosition == "GK";
+        
+        if (position == Models.Position.DL || position == Models.Position.DR || position == Models.Position.DC)
+            return playerPosition?.Contains("D") == true || playerPosition == "CB" || playerPosition == "LB" || playerPosition == "RB";
+        
+        if (position == Models.Position.WBL || position == Models.Position.WBR)
+            return playerPosition?.Contains("WB") == true || playerPosition?.Contains("B") == true;
+        
+        if (position == Models.Position.DM || position == Models.Position.MC || position == Models.Position.ML || position == Models.Position.MR)
+            return playerPosition?.Contains("M") == true && !playerPosition.Contains("AM");
+        
+        if (position == Models.Position.AMC || position == Models.Position.AML || position == Models.Position.AMR)
+            return playerPosition?.Contains("AM") == true || playerPosition?.Contains("M") == true;
+        
+        if (position == Models.Position.ST)
+            return playerPosition?.Contains("ST") == true || playerPosition?.Contains("CF") == true || playerPosition == "F";
+        
+        return true; // fallback
+    }
+}

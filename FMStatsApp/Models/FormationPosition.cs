@@ -10,6 +10,13 @@ namespace FMStatsApp.Models
 		public long? SelectedPlayerId { get; set; }
 		public Player? SelectedPlayer { get; set; }
 		
+		// Lock states
+		public bool IsRoleLocked { get; set; } = false;
+		public bool IsPlayerLocked { get; set; } = false;
+		
+		// Convenience property to check if either role or player is locked
+		public bool IsLocked => IsRoleLocked || IsPlayerLocked;
+		
 		// För visual layout
 		public int GridRow { get; set; }
 		public int GridColumn { get; set; }
